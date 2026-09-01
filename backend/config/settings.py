@@ -32,6 +32,8 @@ env = environ.Env(
     RAZORPAY_KEY_ID=(str, 'rzp_test_dummykeyid'),
     RAZORPAY_KEY_SECRET=(str, 'dummykeysecret'),
     RAZORPAY_WEBHOOK_SECRET=(str, 'dummywebhooksecret'),
+    CELERY_TASK_ALWAYS_EAGER=(bool, False),
+    CELERY_TASK_EAGER_PROPAGATES_EXCEPTIONS=(bool, True),
 )
 
 # Read .env file
@@ -68,6 +70,7 @@ INSTALLED_APPS = [
     'donations',
     'receipts',
     'volunteers',
+    'notifications',
 ]
 
 MIDDLEWARE = [
@@ -211,6 +214,8 @@ REDIS_URL = env('REDIS_URL')
 # Celery Configuration
 CELERY_BROKER_URL = env('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND')
+CELERY_TASK_ALWAYS_EAGER = env('CELERY_TASK_ALWAYS_EAGER')
+CELERY_TASK_EAGER_PROPAGATES_EXCEPTIONS = env('CELERY_TASK_EAGER_PROPAGATES_EXCEPTIONS')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

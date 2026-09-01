@@ -2,7 +2,9 @@
 Django Admin configuration for campaigns app.
 """
 from django.contrib import admin
-from campaigns.models import Campaign
+from campaigns.models import Campaign, CampaignUpdate
+from campaigns.admin_updates import CampaignUpdateAdmin
+
 
 
 @admin.register(Campaign)

@@ -9,7 +9,7 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
-from campaigns.models import Campaign, CampaignCategory, CampaignStatus
+from campaigns.models import Campaign, CampaignCategory, CampaignStatus, CampaignUpdate
 
 
 class CampaignSerializer(serializers.ModelSerializer):
@@ -140,3 +140,51 @@ class CampaignUpdateSerializer(CampaignWriteSerializer):
                     f'Invalid status transition from {self.instance.status} to {value}.'
                 )
         return value
+
+
+class CampaignUpdateReadSerializer(serializers.ModelSerializer):
+    """Serializer for reading campaign updates."""
+
+    created_by_name = serializers.CharField(source='created_by.get_full_name', read_only=True)
+    campaign_title = serializers.CharField(source='campaign.title', read_only=True)
+
+    class Meta:
+        model = CampaignUpdate
+        fields = [
+            'id',
+            'campaign',
+            'campaign_title',
+            'title',
+            'content',
+            'created_by',
+            'created_by_name',
+            'created_at',
+            'updated_at',
+        ]
+        read_only_fields = fields
+
+
+class CampaignUpdateWriteSerializer(serializers.ModelSerializer):
+    """Serializer for creating/updating campaign updates."""
+
+    campaign = serializers.PrimaryKeyRelatedField(queryset=Campaign.objects.all(), required=False)
+    title = serializers.CharField(max_length=255)
+    content = serializers.CharField()
+
+    class Meta:
+        model = CampaignUpdate
+        fields = [
+            'campaign',
+            'title',
+            'content',
+        ]
+
+    def validate_title(self, value):
+        if not value or not value.strip():
+            raise serializers.ValidationError('Title cannot be empty.')
+        return value.strip()
+
+    def validate_content(self, value):
+        if not value or not value.strip():
+            raise serializers.ValidationError('Content cannot be empty.')
+        return value.strip()

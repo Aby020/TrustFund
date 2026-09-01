@@ -5,6 +5,7 @@ A campaign is a fundraising effort owned by a verified CharityOrganization.
 The raised amount is controlled by the donations domain (not implemented yet)
 and must never be writable through the regular campaign APIs.
 """
+from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
@@ -201,3 +202,42 @@ class Campaign(models.Model):
     def can_transition(cls, current_status, new_status):
         """Whether new_status is a valid transition from current_status."""
         return new_status in cls.VALID_TRANSITIONS.get(current_status, [])
+
+
+class CampaignUpdate(models.Model):
+    """
+    Model representing an update for a fundraising campaign.
+    """
+
+    campaign = models.ForeignKey(
+        'Campaign',
+        on_delete=models.CASCADE,
+        related_name='updates',
+        verbose_name=_('campaign'),
+    )
+    title = models.CharField(
+        _('title'),
+        max_length=255,
+    )
+    content = models.TextField(
+        _('content'),
+    )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name=_('created by'),
+    )
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True, db_index=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
+
+    class Meta:
+        db_table = 'campaign_updates'
+        verbose_name = _('campaign update')
+        verbose_name_plural = _('campaign updates')
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['campaign', 'created_at'], name='ix_camp_update_camp_date'),
+        ]
+
+    def __str__(self):
+        return f'{self.campaign.title}: {self.title}'
