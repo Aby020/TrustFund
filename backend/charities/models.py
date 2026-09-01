@@ -3,6 +3,7 @@ Charity Organization model for TrustFund.
 
 Represents a verified charitable organization linked to a Charity-role User.
 """
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -16,12 +17,77 @@ class VerificationStatus(models.TextChoices):
     REJECTED = 'REJECTED', _('Rejected')
 
 
+class VerificationAction(models.TextChoices):
+    """Actions that can be performed on verification."""
+
+    SUBMIT = 'SUBMIT', _('Submit for verification')
+    APPROVE = 'APPROVE', _('Approve verification')
+    REJECT = 'REJECT', _('Reject verification')
+    RESUBMIT = 'RESUBMIT', _('Resubmit after rejection')
+
+
+class VerificationLog(models.Model):
+    """
+    Audit log for verification workflow actions.
+    Preserves history of all verification state changes.
+    """
+
+    organization = models.ForeignKey(
+        'charities.CharityOrganization',
+        on_delete=models.CASCADE,
+        related_name='verification_logs',
+        verbose_name=_('organization'),
+    )
+    action = models.CharField(
+        _('action'),
+        max_length=20,
+        choices=VerificationAction.choices,
+        db_index=True,
+    )
+    performed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='verification_actions',
+        verbose_name=_('performed by'),
+    )
+    from_status = models.CharField(
+        _('from status'),
+        max_length=20,
+        choices=VerificationStatus.choices,
+    )
+    to_status = models.CharField(
+        _('to status'),
+        max_length=20,
+        choices=VerificationStatus.choices,
+    )
+    reason = models.TextField(
+        _('reason'),
+        blank=True,
+        help_text=_('Reason for rejection or other notes'),
+    )
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True, db_index=True)
+
+    class Meta:
+        db_table = 'charity_verification_logs'
+        verbose_name = _('verification log')
+        verbose_name_plural = _('verification logs')
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['organization', 'created_at'], name='ix_verif_log_org_date'),
+        ]
+
+    def __str__(self):
+        return f'{self.organization.name} - {self.action} by {self.performed_by}'
+
+
 class CharityOrganization(models.Model):
     """
     Model representing a charitable organization.
 
     Linked to a Charity-role User who owns/manages the organization.
-    Includes verification workflow foundation.
+    Includes verification workflow.
     """
 
     # Owner relationship - must be a Charity-role user
@@ -100,7 +166,7 @@ class CharityOrganization(models.Model):
         help_text=_('Government registration/charity number'),
     )
 
-    # Verification workflow foundation
+    # Verification workflow
     verification_status = models.CharField(
         _('verification status'),
         max_length=20,
@@ -108,6 +174,27 @@ class CharityOrganization(models.Model):
         default=VerificationStatus.PENDING,
         db_index=True,
         help_text=_('Current verification status of the organization'),
+    )
+    submitted_at = models.DateTimeField(
+        _('submitted at'),
+        null=True,
+        blank=True,
+        help_text=_('Timestamp when organization was submitted for verification'),
+    )
+    reviewed_at = models.DateTimeField(
+        _('reviewed at'),
+        null=True,
+        blank=True,
+        help_text=_('Timestamp when verification was reviewed by admin'),
+    )
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='charity_verifications_reviewed',
+        verbose_name=_('reviewed by'),
+        help_text=_('Admin user who reviewed the verification'),
     )
     verified_at = models.DateTimeField(
         _('verified at'),
@@ -145,6 +232,13 @@ class CharityOrganization(models.Model):
     def __str__(self):
         return self.name
 
+    # Valid state transitions
+    VALID_TRANSITIONS = {
+        VerificationStatus.PENDING: [VerificationStatus.VERIFIED, VerificationStatus.REJECTED],
+        VerificationStatus.REJECTED: [VerificationStatus.PENDING],  # Resubmit after rejection
+        # VERIFIED is terminal - no transitions allowed
+    }
+
     def clean(self):
         """Validate model before saving."""
         from django.core.exceptions import ValidationError
@@ -169,20 +263,128 @@ class CharityOrganization(models.Model):
                 'rejection_reason': _('Rejection reason should only be set when status is REJECTED.'),
             })
 
-    def save(self, *args, **kwargs):
-        """Override save to set verified_at when status changes to VERIFIED."""
+        # Validate state transitions
         if self.pk:
             try:
                 old = CharityOrganization.objects.get(pk=self.pk)
-                if (old.verification_status != VerificationStatus.VERIFIED
-                        and self.verification_status == VerificationStatus.VERIFIED
-                        and not self.verified_at):
-                    self.verified_at = timezone.now()
+                if old.verification_status != self.verification_status:
+                    valid_next = self.VALID_TRANSITIONS.get(old.verification_status, [])
+                    if self.verification_status not in valid_next:
+                        raise ValidationError({
+                            'verification_status': _(
+                                f"Invalid transition from {old.verification_status} to {self.verification_status}."
+                            ),
+                        })
             except CharityOrganization.DoesNotExist:
                 pass
 
+    def save(self, *args, **kwargs):
+        """Override save to set timestamps on status changes."""
+        is_new = self.pk is None
+
+        if not is_new:
+            try:
+                old = CharityOrganization.objects.get(pk=self.pk)
+                # Handle status transitions
+                if old.verification_status != self.verification_status:
+                    if self.verification_status == VerificationStatus.VERIFIED:
+                        self.verified_at = timezone.now()
+                        self.reviewed_at = timezone.now()
+                    elif self.verification_status == VerificationStatus.REJECTED:
+                        self.reviewed_at = timezone.now()
+                    elif (old.verification_status == VerificationStatus.REJECTED
+                          and self.verification_status == VerificationStatus.PENDING):
+                        # Resubmit
+                        self.submitted_at = timezone.now()
+                        self.reviewed_at = None
+                        self.reviewed_by = None
+                        self.verified_at = None
+                        self.rejection_reason = ''
+            except CharityOrganization.DoesNotExist:
+                pass
+        else:
+            # New organization - not yet submitted
+            pass
+
         self.full_clean()
         super().save(*args, **kwargs)
+
+    def submit_for_verification(self, user):
+        """Submit organization for verification by owner."""
+        if not user.is_charity() or user != self.owner:
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied(_('Only the charity owner can submit for verification.'))
+
+        if self.verification_status != VerificationStatus.PENDING:
+            from django.core.exceptions import ValidationError
+            raise ValidationError(_('Only pending organizations can be submitted.'))
+
+        self.submitted_at = timezone.now()
+        self.verification_status = VerificationStatus.PENDING
+        self.save()
+
+    def approve_verification(self, admin_user):
+        """Approve verification by admin."""
+        if not admin_user.is_admin_user():
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied(_('Only admins can approve verification.'))
+
+        if admin_user == self.owner:
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied(_('An organization cannot approve its own verification.'))
+
+        if self.verification_status != VerificationStatus.PENDING:
+            from django.core.exceptions import ValidationError
+            raise ValidationError(_('Only pending organizations can be approved.'))
+
+        self.verification_status = VerificationStatus.VERIFIED
+        self.reviewed_by = admin_user
+        self.reviewed_at = timezone.now()
+        self.verified_at = timezone.now()
+        self.save()
+
+    def reject_verification(self, admin_user, reason):
+        """Reject verification by admin."""
+        if not admin_user.is_admin_user():
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied(_('Only admins can reject verification.'))
+
+        if admin_user == self.owner:
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied(_('An organization cannot reject its own verification.'))
+
+        if self.verification_status != VerificationStatus.PENDING:
+            from django.core.exceptions import ValidationError
+            raise ValidationError(_('Only pending organizations can be rejected.'))
+
+        if not reason or not reason.strip():
+            from django.core.exceptions import ValidationError
+            raise ValidationError(_('Rejection reason is required.'))
+
+        self.verification_status = VerificationStatus.REJECTED
+        self.reviewed_by = admin_user
+        self.reviewed_at = timezone.now()
+        self.rejection_reason = reason.strip()
+        self.verified_at = None
+        self.save()
+
+    def resubmit_for_verification(self, user):
+        """Resubmit after rejection by owner."""
+        if not user.is_charity() or user != self.owner:
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied(_('Only the charity owner can resubmit for verification.'))
+
+        if self.verification_status != VerificationStatus.REJECTED:
+            from django.core.exceptions import ValidationError
+            raise ValidationError(_('Only rejected organizations can be resubmitted.'))
+
+        self.verification_status = VerificationStatus.PENDING
+        self.submitted_at = timezone.now()
+        self.reviewed_at = None
+        self.reviewed_by = None
+        self.rejection_reason = ''
+        self.verified_at = None
+        self.save()
 
     @property
     def is_verified(self):
@@ -198,3 +400,13 @@ class CharityOrganization(models.Model):
     def is_rejected(self):
         """Check if organization is rejected."""
         return self.verification_status == VerificationStatus.REJECTED
+
+    @property
+    def can_submit(self):
+        """Check if organization can be submitted for verification."""
+        return self.verification_status in [VerificationStatus.PENDING, VerificationStatus.REJECTED]
+
+    @property
+    def can_be_reviewed(self):
+        """Check if organization can be reviewed by admin."""
+        return self.verification_status == VerificationStatus.PENDING and self.submitted_at is not None
