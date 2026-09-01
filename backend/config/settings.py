@@ -29,6 +29,9 @@ env = environ.Env(
     SECURE_SSL_REDIRECT=(bool, False),
     SESSION_COOKIE_SECURE=(bool, False),
     CSRF_COOKIE_SECURE=(bool, False),
+    RAZORPAY_KEY_ID=(str, 'rzp_test_dummykeyid'),
+    RAZORPAY_KEY_SECRET=(str, 'dummykeysecret'),
+    RAZORPAY_WEBHOOK_SECRET=(str, 'dummywebhooksecret'),
 )
 
 # Read .env file
@@ -41,6 +44,9 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
+RAZORPAY_KEY_ID = env('RAZORPAY_KEY_ID')
+RAZORPAY_KEY_SECRET = env('RAZORPAY_KEY_SECRET')
+RAZORPAY_WEBHOOK_SECRET = env('RAZORPAY_WEBHOOK_SECRET')
 
 # Application definition
 INSTALLED_APPS = [
@@ -59,6 +65,7 @@ INSTALLED_APPS = [
     'users',
     'charities',
     'campaigns',
+    'donations',
 ]
 
 MIDDLEWARE = [
