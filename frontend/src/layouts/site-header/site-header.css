@@ -1,0 +1,241 @@
+/* SiteHeader — sticky premium header: brand, primary nav, auth actions,
+   and the animated mobile panel. Mobile-first; desktop nav appears ≥ md. */
+
+.site-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 40;
+  background-color: color-mix(in srgb, var(--color-bg) 82%, transparent);
+  -webkit-backdrop-filter: blur(var(--shell-header-blur));
+  backdrop-filter: blur(var(--shell-header-blur));
+  border-block-end: 1px solid var(--color-border);
+  transition:
+    box-shadow var(--duration-normal) var(--ease-out-cubic),
+    border-color var(--duration-normal) var(--ease-out-cubic);
+}
+
+/* Elevate subtly once the page scrolls. */
+.site-header.is-scrolled {
+  border-block-end-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  block-size: var(--shell-header-height);
+}
+
+.site-header__brand {
+  flex: none;
+}
+
+/* --- Primary nav (desktop) -------------------------------------------------- */
+
+.site-header__nav {
+  display: none;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.site-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-inline-start: auto;
+}
+
+.site-header__auth {
+  display: none;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Shared link+CTA styling (also used inside the mobile panel). */
+.site-nav-cta {
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.site-nav-cta:hover {
+  text-decoration: none;
+}
+
+/* --- Menu toggle (mobile) --------------------------------------------------- */
+
+.site-header__menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard);
+}
+
+.site-header__menu-toggle:hover {
+  background-color: var(--color-surface-muted);
+  color: var(--color-text-strong);
+}
+
+/* --- Mobile panel ----------------------------------------------------------- */
+
+.site-header__mobile-panel {
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline: 0;
+  z-index: 30;
+  max-block-size: calc(100dvh - var(--shell-header-height));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background-color: var(--color-bg);
+  border-block-end: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition:
+    opacity var(--duration-normal) var(--ease-out-cubic),
+    transform var(--duration-normal) var(--ease-out-cubic),
+    visibility 0s linear var(--duration-normal);
+}
+
+.site-header__mobile-panel.is-open {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  transition:
+    opacity var(--duration-normal) var(--ease-out-cubic),
+    transform var(--duration-normal) var(--ease-out-cubic);
+}
+
+.site-header__mobile-inner {
+  padding-block: var(--space-4) var(--space-8);
+}
+
+.site-mobile-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.site-mobile-nav__label {
+  font-size: var(--font-size-3xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+  margin-block: var(--space-2) var(--space-1);
+}
+
+.site-mobile-nav__footer {
+  margin-block-start: var(--space-6);
+  padding-block-start: var(--space-4);
+  border-block-start: 1px solid var(--color-border);
+}
+
+.site-mobile-nav__account {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-block-start: var(--space-1);
+}
+
+/* --- Nav links -------------------------------------------------------------- */
+
+.site-nav__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard);
+}
+
+.site-nav__link:hover {
+  color: var(--color-text);
+  background-color: var(--color-surface-muted);
+  text-decoration: none;
+}
+
+.site-nav__link.is-active {
+  color: var(--color-primary);
+}
+
+/* Desktop links: an underline indicator that sweeps in on hover and sits
+   static while active — a subtle, non-gimmicky active affordance. */
+.site-nav__link--desktop .site-nav__indicator {
+  position: absolute;
+  inset-inline: var(--space-3);
+  inset-block-end: calc(var(--space-1) - 1px);
+  block-size: 2px;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  opacity: 0;
+  transition:
+    transform var(--duration-normal) var(--ease-out-cubic),
+    opacity var(--duration-normal) var(--ease-standard);
+}
+
+.site-nav__link--desktop:hover .site-nav__indicator,
+.site-nav__link--desktop.is-active .site-nav__indicator,
+.site-nav__link--desktop .site-nav__indicator[data-active] {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+/* Mobile links: larger targets, roomier text, slide-in entrance. */
+.site-nav__link--mobile {
+  justify-content: space-between;
+  min-block-size: 3rem;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-lg);
+  opacity: 0;
+  transform: translateX(-8px);
+  transition:
+    opacity var(--duration-normal) var(--ease-out-cubic),
+    transform var(--duration-normal) var(--ease-out-cubic),
+    color var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard);
+}
+
+.site-header__mobile-panel.is-open .site-nav__link--mobile {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* --- Responsive: desktop layout --------------------------------------------- */
+
+@media (min-width: 768px) {
+  .site-header__nav {
+    display: flex;
+  }
+
+  .site-header__auth {
+    display: inline-flex;
+  }
+
+  .site-header__menu-toggle {
+    display: none;
+  }
+
+  .site-header__mobile-panel {
+    display: none;
+  }
+}

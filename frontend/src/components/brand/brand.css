@@ -1,0 +1,67 @@
+/* Brand — TrustFund mark + wordmark (header compact, footer tagline). */
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text-strong);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+
+.brand:hover {
+  color: var(--color-text-strong);
+  text-decoration: none;
+}
+
+.brand__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  flex: none;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--emerald-500), var(--emerald-800));
+  box-shadow: var(--shadow-sm);
+}
+
+/* Slight lift on hover for a tactile, premium feel. */
+.brand:hover .brand__mark {
+  transform: translateY(-1px);
+}
+
+.brand__mark svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.brand__wordmark {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.brand__name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.brand__tagline {
+  margin-block-start: var(--space-1);
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--color-text-muted);
+}
+
+/* Footer variant: slightly larger, warmer. */
+.brand--tagline .brand__mark {
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+}
+
+.brand--tagline .brand__name {
+  font-size: var(--font-size-xl);
+}

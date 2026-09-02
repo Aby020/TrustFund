@@ -47,3 +47,8 @@ export { Container } from './container/container';
 export type { ContainerProps } from './container/container';
 export { Section } from './section/section';
 export type { SectionProps } from './section/section';
+
+export { Icon } from './icon/icon';
+export type { IconProps, IconName } from './icon/icon';
+export { Brand } from './brand/brand';
+export type { BrandProps } from './brand/brand';

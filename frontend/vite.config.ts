@@ -22,6 +22,10 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test-setup.ts'],
+    // Force a dev/test React build regardless of an ambient NODE_ENV
+    // (e.g. NODE_ENV=production in the shell). Production React builds omit
+    // `React.act`, which breaks @testing-library/react's render.
+    env: { NODE_ENV: 'test' },
     // css: false (default) — tests assert structure/accessibility, not
     // computed styles, and jsdom's parser chokes on modern token syntax
     // (color-mix, clamp) that the Vite build handles fine.

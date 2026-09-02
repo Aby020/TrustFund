@@ -318,4 +318,9 @@
   /* Toasts */
   --toast-radius: var(--radius-lg);
   --toast-max-width: 24rem;
+
+  /* App shell */
+  --shell-header-height: 4rem;
+  --shell-header-blur: 8px;
+  --shell-content-max: 1200px;
 }

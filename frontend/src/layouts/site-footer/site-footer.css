@@ -1,0 +1,108 @@
+/* SiteFooter — TrustFund global footer: brand + trust, nav groups, bottom bar. */
+
+.site-footer {
+  border-block-start: 1px solid var(--color-border);
+  background-color: var(--color-surface-subtle);
+}
+
+.site-footer__top {
+  display: grid;
+  gap: var(--space-8);
+  padding-block: var(--space-10) var(--space-8);
+}
+
+.site-footer__brand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-inline-size: 22rem;
+}
+
+.site-footer__trust {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-md);
+  color: var(--color-text-muted);
+}
+
+.site-footer__trust svg {
+  flex: none;
+  color: var(--color-primary);
+  margin-block-start: 1px;
+}
+
+.site-footer__groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--space-6);
+}
+
+.site-footer__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.site-footer__heading {
+  font-size: var(--font-size-3xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+
+.site-footer__list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.site-footer__link {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.site-footer__link:hover {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.site-footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block: var(--space-4);
+  border-block-start: 1px solid var(--color-border);
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-subtle);
+}
+
+.site-footer__status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.site-footer__status-dot {
+  inline-size: 0.5rem;
+  block-size: 0.5rem;
+  border-radius: var(--radius-full);
+  background-color: var(--color-success);
+}
+
+/* --- Responsive ------------------------------------------------------------- */
+
+@media (min-width: 768px) {
+  .site-footer__top {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 2fr);
+    align-items: start;
+  }
+}
