@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
-import { Container, Section, Reveal, Badge, Icon } from '@/components';
+import { Container, Section, Badge, Icon } from '@/components';
+import { motion } from 'motion/react';
+import { staggerContainer, fadeUp, progressFill } from '@/components/motion/variants';
 import { formatCurrency } from '@/utils/format';
 import './campaign-preview.css';
 
@@ -7,7 +9,7 @@ import './campaign-preview.css';
  * CampaignPreview — three representative demo campaigns. Illustrative
  * content only; clearly labelled. Uses real design-system components
  * (Card, Badge, Progress). The card image areas are intentionally designed
- * gradient placeholders — no external images.
+ * gradient placeholders — no external images. Migrated to Framer Motion.
  */
 
 interface Campaign {
@@ -18,8 +20,8 @@ interface Campaign {
   raised: number;
   goal: number;
   daysLeft: number;
-  gradientFrom: string;
-  gradientTo: string;
+  image: string;
+  alt: string;
 }
 
 const DEMO_CAMPAIGNS: Campaign[] = [
@@ -31,8 +33,8 @@ const DEMO_CAMPAIGNS: Campaign[] = [
     raised: 320000,
     goal: 500000,
     daysLeft: 24,
-    gradientFrom: 'var(--color-primary-soft, #ecfdf5)',
-    gradientTo: 'var(--info-soft, #eff6ff)',
+    image: '/images/campaign-water.webp',
+    alt: 'Children filling containers with clean water from a community hand pump in a village',
   },
   {
     id: 2,
@@ -42,8 +44,8 @@ const DEMO_CAMPAIGNS: Campaign[] = [
     raised: 160000,
     goal: 250000,
     daysLeft: 11,
-    gradientFrom: 'var(--warning-soft, #fffbeb)',
-    gradientTo: 'var(--info-soft, #eff6ff)',
+    image: '/images/campaign-education.webp',
+    alt: 'Students writing on slates in a village school classroom',
   },
   {
     id: 3,
@@ -53,8 +55,8 @@ const DEMO_CAMPAIGNS: Campaign[] = [
     raised: 780000,
     goal: 1000000,
     daysLeft: 31,
-    gradientFrom: 'var(--info-soft, #eff6ff)',
-    gradientTo: 'var(--color-primary-soft, #ecfdf5)',
+    image: '/images/campaign-health.webp',
+    alt: "A healthcare worker measuring a woman's blood pressure at an outdoor community clinic",
   },
 ] as const;
 
@@ -62,58 +64,67 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
   const pct = Math.round((campaign.raised / campaign.goal) * 100);
 
   return (
-    <Link to="/campaigns" className="campaign-preview__card">
-      {/* Gradient placeholder for image area */}
-      <div
-        className="campaign-preview__img"
-        style={{
-          background: `linear-gradient(135deg, ${campaign.gradientFrom}, ${campaign.gradientTo})`,
-        }}
-        aria-hidden="true"
-      >
-        <span className="campaign-preview__img-label">{campaign.category}</span>
-      </div>
-
-      <div className="campaign-preview__body">
-        <div className="campaign-preview__org">
-          <Icon name="building" size={14} />
-          <span>{campaign.org}</span>
+    <motion.div variants={fadeUp}>
+      <Link to="/campaigns" className="campaign-preview__card">
+        {/* Photography header — zero-CLS with aspect-ratio + explicit dimensions */}
+        <div className="campaign-preview__img">
+          <img
+            className="campaign-preview__img-el"
+            src={campaign.image}
+            alt={campaign.alt}
+            loading="lazy"
+            decoding="async"
+            width={640}
+            height={360}
+          />
+          <span className="campaign-preview__img-label">{campaign.category}</span>
         </div>
 
-        <h3 className="campaign-preview__title">{campaign.title}</h3>
-
-        {/* Progress — accessible with value and label */}
-        <div
-          className="campaign-preview__progress"
-          role="progressbar"
-          aria-valuenow={pct}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label={`${campaign.title}: ${pct} percent funded`}
-        >
-          <div className="campaign-preview__progress-track">
-            <div
-              className="campaign-preview__progress-fill"
-              style={{ '--progress': `${pct}%` } as React.CSSProperties}
-            />
+        <div className="campaign-preview__body">
+          <div className="campaign-preview__org">
+            <Icon name="building" size={14} />
+            <span>{campaign.org}</span>
           </div>
-        </div>
 
-        <div className="campaign-preview__meta">
-          <span className="campaign-preview__raised">
-            {formatCurrency(campaign.raised)} of {formatCurrency(campaign.goal)}
-          </span>
-          <span className="campaign-preview__days">
-            <Icon name="calendar" size={12} />
-            {campaign.daysLeft} days
-          </span>
-        </div>
+          <h3 className="campaign-preview__title">{campaign.title}</h3>
 
-        <Badge tone="accent" className="campaign-preview__badge">
-          Verified
-        </Badge>
-      </div>
-    </Link>
+          {/* Progress — accessible with value and label */}
+          <div
+            className="campaign-preview__progress"
+            role="progressbar"
+            aria-valuenow={pct}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={`${campaign.title}: ${pct} percent funded`}
+          >
+            <div className="campaign-preview__progress-track">
+              <motion.div
+                className="campaign-preview__progress-fill"
+                variants={progressFill}
+                style={{
+                  width: `${pct}%`,
+                  transformOrigin: 'left',
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="campaign-preview__meta">
+            <span className="campaign-preview__raised">
+              {formatCurrency(campaign.raised)} of {formatCurrency(campaign.goal)}
+            </span>
+            <span className="campaign-preview__days">
+              <Icon name="calendar" size={12} />
+              {campaign.daysLeft} days
+            </span>
+          </div>
+
+          <Badge tone="accent" className="campaign-preview__badge">
+            Verified
+          </Badge>
+        </div>
+      </Link>
+    </motion.div>
   );
 }
 
@@ -132,15 +143,24 @@ export function CampaignPreview() {
           Example campaigns — illustrative only
         </p>
 
-        <div className="campaign-preview__grid">
-          {DEMO_CAMPAIGNS.map((campaign, i) => (
-            <Reveal key={campaign.id} delay={i * 100}>
-              <CampaignCard campaign={campaign} />
-            </Reveal>
+        <motion.div
+          className="campaign-preview__grid"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          {DEMO_CAMPAIGNS.map((campaign) => (
+            <CampaignCard key={campaign.id} campaign={campaign} />
           ))}
-        </div>
+        </motion.div>
 
-        <Reveal delay={300}>
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
           <div className="campaign-preview__cta-wrap">
             <Link
               to="/campaigns"
@@ -150,7 +170,7 @@ export function CampaignPreview() {
               <Icon name="arrow-right" size={16} />
             </Link>
           </div>
-        </Reveal>
+        </motion.div>
       </Container>
     </Section>
   );

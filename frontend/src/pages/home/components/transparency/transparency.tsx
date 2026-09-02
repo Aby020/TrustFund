@@ -1,12 +1,13 @@
-import { Container, Section, Reveal, Badge, Icon } from '@/components';
+import { Container, Section, Badge, Icon } from '@/components';
+import { motion } from 'motion/react';
+import { staggerContainer, fadeUp, progressFill } from '@/components/motion/variants';
 import './transparency.css';
 
 /**
  * TransparencySection — editorial left: transparency philosophy + what donors
  * can see. Right: a product-panel showing live progress, a funding breakdown,
  * an impact update, and a receipt snippet — all clearly labelled as
- * illustrative demo data. Uses the existing Progress bar with values and label
- * attributes for accessibility.
+ * illustrative demo data. Migrated to Framer Motion.
  */
 
 const SEE_ITEMS = [
@@ -53,9 +54,15 @@ export function Transparency() {
       className="transparency"
     >
       <Container>
-        <div className="transparency__grid">
+        <motion.div
+          className="transparency__grid"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+        >
           {/* ---- Left: what donors can see ---- */}
-          <Reveal className="transparency__see">
+          <motion.div className="transparency__see" variants={fadeUp}>
             <h3 className="transparency__see-title">What you can see</h3>
             <ul className="transparency__see-list">
               {SEE_ITEMS.map((item) => (
@@ -70,10 +77,10 @@ export function Transparency() {
                 </li>
               ))}
             </ul>
-          </Reveal>
+          </motion.div>
 
           {/* ---- Right: product panel (illustrative) ---- */}
-          <Reveal delay={100} className="transparency__panel-wrap">
+          <motion.div className="transparency__panel-wrap" variants={fadeUp}>
             <div className="transparency__panel">
               <div className="transparency__panel-head">
                 <h3 className="transparency__panel-title">
@@ -90,10 +97,13 @@ export function Transparency() {
                 <span>Raised: ₹6,56,000</span>
               </div>
 
-              {/* Progress bar — accessible with role + aria label */}
               <div className="transparency__progress" role="progressbar" aria-valuenow={82} aria-valuemin={0} aria-valuemax={100} aria-label="Campaign progress: 82 percent">
                 <div className="transparency__progress-track">
-                  <div className="transparency__progress-fill" style={{ '--progress': '82%' } as React.CSSProperties} />
+                  <motion.div
+                    className="transparency__progress-fill"
+                    variants={progressFill}
+                    style={{ transformOrigin: 'left' }}
+                  />
                 </div>
                 <span className="transparency__progress-pct">82%</span>
               </div>
@@ -103,10 +113,11 @@ export function Transparency() {
                 <h4 className="transparency__alloc-title">Funding breakdown</h4>
                 <div className="transparency__alloc-bar" aria-label="Funding allocation — 76% scholarships, 16% operations, 8% fundraising">
                   {ALLOCATIONS.map((a) => (
-                    <span
+                    <motion.span
                       key={a.label}
                       className="transparency__alloc-seg"
-                      style={{ width: `${a.pct}%`, background: a.color }}
+                      variants={progressFill}
+                      style={{ width: `${a.pct}%`, background: a.color, transformOrigin: 'left' }}
                       aria-hidden="true"
                     />
                   ))}
@@ -136,8 +147,8 @@ export function Transparency() {
               </div>
             </div>
             <p className="transparency__panel-note">Example — illustrative preview</p>
-          </Reveal>
-        </div>
+          </motion.div>
+        </motion.div>
       </Container>
     </Section>
   );

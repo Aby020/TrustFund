@@ -1,10 +1,11 @@
-import { Container, Reveal, Icon } from '@/components';
+import { Container, Icon } from '@/components';
+import { motion } from 'motion/react';
+import { staggerContainer, fadeUp } from '@/components/motion/variants';
 import './trust-strip.css';
 
 /**
  * TrustStrip — a horizontal credibility bar showing five product capabilities.
- * Each item is an icon + short copy. No fabricated stats, no user counts, no
- * partnership claims — only features the product is designed to deliver.
+ * Migrated to Framer Motion for staggered entrance.
  */
 
 const TRUST_ITEMS = [
@@ -39,21 +40,25 @@ export function TrustStrip() {
   return (
     <section className="trust-strip" aria-label="Trust and safety capabilities">
       <Container>
-        <Reveal>
-          <ul className="trust-strip__list">
-            {TRUST_ITEMS.map((item) => (
-              <li key={item.title} className="trust-strip__item">
-                <span className="trust-strip__icon" aria-hidden="true">
-                  <Icon name={item.icon} size={20} />
-                </span>
-                <div className="trust-strip__text">
-                  <h3 className="trust-strip__title">{item.title}</h3>
-                  <p className="trust-strip__desc">{item.desc}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Reveal>
+        <motion.ul
+          className="trust-strip__list"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+        >
+          {TRUST_ITEMS.map((item) => (
+            <motion.li key={item.title} className="trust-strip__item" variants={fadeUp}>
+              <span className="trust-strip__icon" aria-hidden="true">
+                <Icon name={item.icon} size={20} />
+              </span>
+              <div className="trust-strip__text">
+                <h3 className="trust-strip__title">{item.title}</h3>
+                <p className="trust-strip__desc">{item.desc}</p>
+              </div>
+            </motion.li>
+          ))}
+        </motion.ul>
       </Container>
     </section>
   );

@@ -51,22 +51,37 @@
   outline-offset: 2px;
 }
 
-/* Gradient placeholder for image area */
+/* Photography header — aspect-ratio reserves space to prevent CLS */
 
 .campaign-preview__img {
   position: relative;
-  height: 140px;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  overflow: hidden;
   display: flex;
   align-items: flex-end;
   padding: var(--space-3);
+  background: var(--color-surface-muted, #f4f2ee);
+}
+
+.campaign-preview__img-el {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .campaign-preview__img-label {
+  position: relative;
+  z-index: 1;
   font-size: var(--font-size-2xs);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-text-muted);
+  color: #fff;
   letter-spacing: var(--letter-spacing-wide);
   text-transform: uppercase;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 /* Body */

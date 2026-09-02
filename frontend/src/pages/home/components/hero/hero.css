@@ -13,7 +13,23 @@
     var(--color-bg, #faf9f7);
 }
 
+/* Ambient background layer — a soft emerald glow that slowly breathes.
+   Decorative only; aria-hidden and motion is suppressed under reduced motion. */
+.hero__ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 55% 45% at 70% 30%,
+    var(--color-primary-soft, #ecfdf5) 0%,
+    transparent 70%
+  );
+}
+
 .hero__inner {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: var(--space-10);
   align-items: center;
@@ -115,6 +131,25 @@
   box-shadow: var(--shadow-lg);
   min-width: 280px;
   max-width: 340px;
+  overflow: hidden;
+}
+
+/* Photo header inside the hero campaign card — contained, zero-CLS */
+
+.hero__card-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: calc(100% + 2 * var(--space-5));
+  margin-left: calc(-1 * var(--space-5));
+  margin-top: calc(-1 * var(--space-5));
+  overflow: hidden;
+}
+
+.hero__card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .hero__card-head {

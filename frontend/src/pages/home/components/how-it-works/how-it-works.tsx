@@ -1,10 +1,13 @@
-import { Container, Section, Reveal, Icon } from '@/components';
+import { Container, Section, Icon } from '@/components';
+import { motion } from 'motion/react';
+import { staggerContainer, fadeUp, scaleIn } from '@/components/motion/variants';
 import './how-it-works.css';
 
 /**
  * HowItWorks — four-step progression: Discover → Verify → Give → Track.
  * Horizontal stepper on desktop with connecting hairline; vertical on mobile.
- * Uses h2 heading level via Section.
+ * Uses h2 heading level via Section. Migrated to Framer Motion for
+ * staggered entrance.
  */
 
 const STEPS = [
@@ -45,22 +48,30 @@ export function HowItWorks() {
       className="how-it-works"
     >
       <Container>
-        <ol className="how-it-works__steps">
-          {STEPS.map((step, i) => (
-            <li key={step.num} className="how-it-works__step">
-              <Reveal delay={i * 80}>
-                <div className="how-it-works__node" aria-hidden="true">
-                  <span className="how-it-works__number">{step.num}</span>
-                  <span className="how-it-works__icon">
-                    <Icon name={step.icon} size={18} />
-                  </span>
-                </div>
-                <h3 className="how-it-works__title">{step.title}</h3>
-                <p className="how-it-works__copy">{step.copy}</p>
-              </Reveal>
-            </li>
+        <motion.ol
+          className="how-it-works__steps"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          {STEPS.map((step) => (
+            <motion.li
+              key={step.num}
+              className="how-it-works__step"
+              variants={fadeUp}
+            >
+              <div className="how-it-works__node" aria-hidden="true">
+                <span className="how-it-works__number">{step.num}</span>
+                <motion.span className="how-it-works__icon" variants={scaleIn}>
+                  <Icon name={step.icon} size={18} />
+                </motion.span>
+              </div>
+              <h3 className="how-it-works__title">{step.title}</h3>
+              <p className="how-it-works__copy">{step.copy}</p>
+            </motion.li>
           ))}
-        </ol>
+        </motion.ol>
       </Container>
     </Section>
   );

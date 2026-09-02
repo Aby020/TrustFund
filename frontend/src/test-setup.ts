@@ -2,7 +2,7 @@ import '@testing-library/jest-dom/vitest';
 
 /* -----------------------------------------------------------------------
  * Browser API stubs — jsdom does not implement these; components that use
- * them (e.g. useMediaQuery, usePrefersReducedMotion, Reveal) need them
+ * them (e.g. useMediaQuery, usePrefersReducedMotion, MotionReveal) need them
  * available at test time.
  * -------------------------------------------------------------------- */
 
