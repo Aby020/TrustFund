@@ -1,0 +1,118 @@
+/* HowItWorks — horizontal stepper with connecting hairline. */
+
+.how-it-works {
+  padding-block: var(--spacing-section-lg, 6rem);
+}
+
+.how-it-works__steps {
+  display: grid;
+  gap: var(--space-8);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: step;
+}
+
+@media (min-width: 768px) {
+  .how-it-works__steps {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-6);
+    position: relative;
+  }
+
+  /* Connecting hairline across the node row */
+  .how-it-works__steps::before {
+    content: '';
+    position: absolute;
+    top: 22px;
+    left: calc(22px + var(--space-6));
+    right: calc(22px + var(--space-6));
+    height: 2px;
+    background: var(--color-border, #e8e5df);
+    z-index: 0;
+  }
+}
+
+.how-it-works__step {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  counter-increment: step;
+}
+
+@media (min-width: 768px) {
+  .how-it-works__step {
+    align-items: center;
+    text-align: center;
+  }
+}
+
+.how-it-works__node {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.how-it-works__number {
+  display: none;
+}
+
+.how-it-works__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary, #047857);
+  color: var(--color-on-primary, #fff);
+  box-shadow: 0 0 0 4px var(--color-bg, #faf9f7);
+}
+
+/* Mobile: vertical list with left rail */
+
+@media (max-width: 767px) {
+  .how-it-works__steps {
+    padding-left: var(--space-3);
+    border-inline-start: 2px solid var(--color-border, #e8e5df);
+  }
+
+  .how-it-works__step {
+    padding-left: var(--space-6);
+    position: relative;
+  }
+
+  .how-it-works__icon {
+    position: absolute;
+    left: calc(-1px - 22px);
+    top: 0;
+  }
+
+  .how-it-works__number {
+    display: block;
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary-soft-text, #047857);
+    letter-spacing: var(--letter-spacing-wide);
+    line-height: 1;
+  }
+}
+
+.how-it-works__title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-strong);
+  letter-spacing: var(--letter-spacing-tight);
+  margin: 0;
+}
+
+.how-it-works__copy {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-md);
+  margin: 0;
+}

@@ -1,0 +1,100 @@
+/* ImpactStory — editorial two-column with pull-quote. */
+
+.impact-story {
+  padding-block: var(--spacing-section-lg, 6rem);
+  background:
+    linear-gradient(
+      135deg,
+      var(--color-primary-soft, #ecfdf5) 0%,
+      var(--color-bg, #faf9f7) 100%
+    );
+}
+
+.impact-story__grid {
+  display: grid;
+  gap: var(--space-10);
+}
+
+@media (min-width: 1024px) {
+  .impact-story__grid {
+    grid-template-columns: 5fr 7fr;
+    gap: var(--space-16);
+    align-items: start;
+  }
+}
+
+/* ---- Quote column ---- */
+
+.impact-story__quote-wrap {
+  position: sticky;
+  top: var(--space-16);
+}
+
+.impact-story__quote {
+  margin: 0;
+  padding-inline-start: var(--space-5);
+  border-inline-start: 3px solid var(--color-primary, #047857);
+}
+
+.impact-story__quote-text {
+  font-size: clamp(var(--font-size-xl), 1rem + 1.5vw, var(--font-size-3xl));
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-strong);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: var(--line-height-sm);
+  margin: 0;
+}
+
+/* ---- Prose column ---- */
+
+.impact-story__heading {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-strong);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: var(--line-height-sm);
+  margin: 0 0 var(--space-5);
+}
+
+.impact-story__para {
+  font-size: var(--font-size-md);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-md);
+  margin: 0 0 var(--space-5);
+}
+
+/* Reasons list */
+
+.impact-story__reasons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  list-style: none;
+  margin: var(--space-5) 0 0;
+  padding: 0;
+}
+
+.impact-story__reason {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-strong);
+  line-height: var(--line-height-md);
+}
+
+.impact-story__reason-mark {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary, #047857);
+  margin-top: 7px;
+}
+
+/* Mobile: no sticky on small screens */
+@media (max-width: 1023px) {
+  .impact-story__quote-wrap {
+    position: static;
+  }
+}

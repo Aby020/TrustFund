@@ -1,0 +1,164 @@
+/* CampaignPreview — three-column card grid with gradient placeholders. */
+
+.campaign-preview {
+  padding-block: var(--spacing-section-lg, 6rem);
+  background: var(--color-surface, #fff);
+}
+
+.campaign-preview__note {
+  text-align: center;
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-subtle);
+  letter-spacing: var(--letter-spacing-wide);
+  font-style: italic;
+  margin: 0 0 var(--space-8);
+}
+
+.campaign-preview__grid {
+  display: grid;
+  gap: var(--space-6);
+  margin-bottom: var(--space-10);
+}
+
+@media (min-width: 768px) {
+  .campaign-preview__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ---- Card ---- */
+
+.campaign-preview__card {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-lg);
+  background: var(--color-bg, #faf9f7);
+  border: 1px solid var(--color-border, #e8e5df);
+  overflow: hidden;
+  text-decoration: none;
+  transition:
+    transform 160ms var(--easing-out-cubic),
+    box-shadow 160ms var(--easing-out-cubic);
+}
+
+.campaign-preview__card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.campaign-preview__card:focus-visible {
+  outline: 2px solid var(--color-focus-ring, #047857);
+  outline-offset: 2px;
+}
+
+/* Gradient placeholder for image area */
+
+.campaign-preview__img {
+  position: relative;
+  height: 140px;
+  display: flex;
+  align-items: flex-end;
+  padding: var(--space-3);
+}
+
+.campaign-preview__img-label {
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+}
+
+/* Body */
+
+.campaign-preview__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5) var(--space-5);
+}
+
+.campaign-preview__org {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+}
+
+.campaign-preview__title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-strong);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: var(--line-height-sm);
+  margin: 0;
+}
+
+/* Progress */
+
+.campaign-preview__progress-track {
+  height: 5px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-muted, #f4f2ee);
+  overflow: hidden;
+}
+
+.campaign-preview__progress-fill {
+  height: 100%;
+  width: var(--progress, 0%);
+  border-radius: var(--radius-full);
+  background: var(--color-primary, #047857);
+  transition: width 800ms var(--easing-in-out);
+}
+
+/* Meta row */
+
+.campaign-preview__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.campaign-preview__raised {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-strong);
+}
+
+.campaign-preview__days {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-muted);
+}
+
+.campaign-preview__badge {
+  align-self: flex-start;
+}
+
+/* CTA */
+
+.campaign-preview__cta-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.campaign-preview__cta-wrap .button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  .campaign-preview__card {
+    transition: none;
+  }
+
+  .campaign-preview__card:hover {
+    transform: none;
+  }
+}

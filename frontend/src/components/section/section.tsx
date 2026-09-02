@@ -5,6 +5,8 @@ import './section.css';
 export interface SectionProps extends HTMLAttributes<HTMLElement> {
   /** Render as a different element (default 'section'). */
   as?: ElementType;
+  /** Heading element level (default 'h1'). Use 'h2' or lower for subsections. */
+  headingLevel?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   /** Show overline + heading + description at the top of the section. */
   overline?: ReactNode;
   heading?: ReactNode;
@@ -21,6 +23,7 @@ export interface SectionProps extends HTMLAttributes<HTMLElement> {
  */
 export function Section({
   as = 'section',
+  headingLevel = 'h1',
   overline,
   heading,
   description,
@@ -30,6 +33,7 @@ export function Section({
   ...rest
 }: SectionProps) {
   const Tag = as as ElementType;
+  const HeadingTag = headingLevel as ElementType;
   const hasHeader = Boolean(overline || heading || description);
 
   return (
@@ -38,7 +42,7 @@ export function Section({
         <div className={`section__header section__header--${align}`}>
           {overline && <p className="overline">{overline}</p>}
           {heading && (
-            <h1 className="section__heading">{heading}</h1>
+            <HeadingTag className="section__heading">{heading}</HeadingTag>
           )}
           {description && <p className="section__description">{description}</p>}
         </div>

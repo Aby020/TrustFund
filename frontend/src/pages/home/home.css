@@ -1,93 +1,12 @@
-/* Home — foundation banner + design-system showcase. */
+/*
+ * home.css — page-level adjustments for the TrustFund landing page.
+ * Individual section styles live in their own component CSS files.
+ * This file is intentionally kept minimal.
+ */
 
-.home__hero {
-  position: relative;
-  padding-block: var(--space-16) var(--space-12);
-  background:
-    radial-gradient(900px 320px at 70% -20%, var(--emerald-100), transparent 60%),
-    linear-gradient(var(--color-bg), var(--color-surface-subtle));
-  border-block-end: 1px solid var(--color-border);
-}
-
-.home__eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin-block-end: var(--space-4);
-}
-
-.home__hero h1 {
-  font-size: clamp(var(--font-size-3xl), 4vw, var(--font-size-5xl));
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--letter-spacing-tight);
-  line-height: var(--line-height-xs);
-  color: var(--color-text-strong);
-  max-inline-size: 36rem;
-}
-
-.home__hero p.lead {
-  margin-block-start: var(--space-4);
-  font-size: var(--font-size-lg);
-  color: var(--color-text-muted);
-  line-height: var(--line-height-lg);
-  max-inline-size: 34rem;
-}
-
-.home__grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-6);
-}
-
-@media (min-width: var(--breakpoint-md)) {
-  .home__grid {
-    grid-template-columns: repeat(2, 1fr);
+/* Smooth scrolling for anchor links within the landing page */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
   }
-}
-
-@media (min-width: var(--breakpoint-xl)) {
-  .home__grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.home__stack {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  align-items: flex-start;
-}
-
-.home__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.home__field-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  inline-size: 100%;
-}
-
-.home__field {
-  flex: 1 1 12rem;
-}
-
-.home__note {
-  font-size: var(--font-size-2xs);
-  color: var(--color-text-subtle);
-  line-height: var(--line-height-md);
-}
-
-.home__list {
-  margin: 0;
-  padding-inline-start: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-  line-height: var(--line-height-md);
 }

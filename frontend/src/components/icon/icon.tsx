@@ -17,7 +17,16 @@ export type IconName =
   | 'user'
   | 'dashboard'
   | 'logout'
-  | 'chevron-down';
+  | 'chevron-down'
+  | 'search'
+  | 'eye'
+  | 'receipt'
+  | 'wallet'
+  | 'trending-up'
+  | 'calendar'
+  | 'target'
+  | 'users'
+  | 'building';
 
 const ICONS: Record<IconName, ReactNode> = {
   menu: (
@@ -76,6 +85,61 @@ const ICONS: Record<IconName, ReactNode> = {
   ),
   'chevron-down': (
     <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  ),
+  search: (
+    <>
+      <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M20 20l-3.2-3.2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </>
+  ),
+  eye: (
+    <>
+      <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6" />
+    </>
+  ),
+  receipt: (
+    <>
+      <path d="M6 3h12v18l-2-1-2 1-2-1-2 1-2-1-2 1V3Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M9 8h6M9 12h6M9 16h3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </>
+  ),
+  wallet: (
+    <>
+      <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M3 10h18" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="17" cy="14" r="1" fill="currentColor" />
+    </>
+  ),
+  'trending-up': (
+    <path d="M3 17l5-5 4 4 9-9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+  ),
+  calendar: (
+    <>
+      <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M3 9h18M8 3v4M16 3v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </>
+  ),
+  target: (
+    <>
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="12" cy="12" r="1" fill="currentColor" />
+    </>
+  ),
+  users: (
+    <>
+      <circle cx="9" cy="7" r="3" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M3 20c1.4-2.9 3.9-4.4 6-4.4s4.6 1.5 6 4.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <circle cx="17" cy="8" r="2.5" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M21 20c-.9-2-3-3.4-5.5-3.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </>
+  ),
+  building: (
+    <>
+      <path d="M5 21V5a2 2 0 012-2h10a2 2 0 012 2v16" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M9 21v-4h6v4M9 7h.01M15 7h.01M9 11h.01M15 11h.01M9 15h6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </>
   ),
 };
 

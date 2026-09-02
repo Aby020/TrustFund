@@ -103,6 +103,8 @@
   --font-size-3xl: 1.875rem;   /* 30px — h1 */
   --font-size-4xl: 2.25rem;    /* 36px — display */
   --font-size-5xl: 3rem;       /* 48px — hero */
+  --font-size-6xl: 3.5rem;     /* 56px — landing hero */
+  --font-size-7xl: 4.5rem;     /* 72px — landing hero large */
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;

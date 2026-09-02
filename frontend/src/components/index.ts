@@ -48,6 +48,9 @@ export type { ContainerProps } from './container/container';
 export { Section } from './section/section';
 export type { SectionProps } from './section/section';
 
+export { Reveal } from './reveal/reveal';
+export type { RevealProps } from './reveal/reveal';
+
 export { Icon } from './icon/icon';
 export type { IconProps, IconName } from './icon/icon';
 export { Brand } from './brand/brand';
