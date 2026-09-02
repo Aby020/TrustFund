@@ -1,0 +1,60 @@
+/* IconButton — square control with an icon; aria-label is mandatory. */
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  background-color: transparent;
+  flex-shrink: 0;
+
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-normal) var(--ease-out-cubic),
+    transform var(--duration-fast) var(--ease-out-cubic);
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 var(--ring-offset) var(--color-bg),
+      0 0 0 calc(var(--ring-offset) + var(--ring-width)) var(--color-ring);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.icon-button--sm {
+  inline-size: 2rem;
+  block-size: 2rem;
+}
+
+.icon-button--md {
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+}
+
+.icon-button--lg {
+  inline-size: 3.25rem;
+  block-size: 3.25rem;
+}
+
+.icon-button:hover:not(:disabled) {
+  background-color: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.icon-button--active {
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+}

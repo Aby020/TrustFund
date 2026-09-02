@@ -1,0 +1,35 @@
+/* Section — vertical-rhythm wrapper with an optional header cluster. */
+
+.section__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-block-end: var(--space-6);
+  max-inline-size: 44rem;
+}
+
+.section__header--center {
+  align-items: center;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.section__heading {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-text-strong);
+  line-height: var(--line-height-xs);
+}
+
+@media (min-width: var(--breakpoint-md)) {
+  .section__heading {
+    font-size: var(--font-size-4xl);
+  }
+}
+
+.section__description {
+  font-size: var(--font-size-md);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-lg);
+}

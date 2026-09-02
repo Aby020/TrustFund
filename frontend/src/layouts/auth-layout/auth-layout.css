@@ -1,0 +1,52 @@
+/* AuthLayout — full-height centered card for login/register in Task 13B. */
+
+.auth-layout {
+  display: grid;
+  place-items: center;
+  min-block-size: 100dvh;
+  padding: var(--space-6);
+  background:
+    radial-gradient(1200px 400px at 50% -10%, var(--emerald-100), transparent 60%),
+    var(--color-bg);
+}
+
+.auth-layout__card {
+  inline-size: 100%;
+  max-inline-size: 26rem;
+}
+
+.auth-layout__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  justify-content: center;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xl);
+  color: var(--color-text-strong);
+  margin-block-end: var(--space-6);
+}
+
+.auth-layout__brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--emerald-600), var(--emerald-800));
+  color: var(--color-text-on-accent);
+  font-size: var(--font-size-md);
+}
+
+.auth-layout__title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-strong);
+  margin-block-end: var(--space-1);
+}
+
+.auth-layout__subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-block-end: var(--space-6);
+}

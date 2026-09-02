@@ -1,0 +1,148 @@
+/* Button — design-system button.
+ * States: default → hover → active → focus-visible → disabled → loading.
+ * Sized from tokens; loading keeps the button's width stable. */
+
+.button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--button-radius, var(--radius-md));
+  font-weight: var(--button-font-weight, var(--font-weight-semibold));
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+  text-decoration: none;
+
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-normal) var(--ease-out-cubic),
+    transform var(--duration-fast) var(--ease-out-cubic);
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 var(--ring-offset) var(--color-bg),
+      0 0 0 calc(var(--ring-offset) + var(--ring-width)) var(--color-ring);
+  }
+
+  &:active:not(:disabled):not(.button--loading) {
+    transform: translateY(1px);
+  }
+
+  &:disabled,
+  &.button--loading {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+/* --- Sizes ---------------------------------------------------------------- */
+
+.button--sm {
+  height: 2rem; /* 32px */
+  padding-inline: var(--space-3);
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-sm);
+}
+
+.button--md {
+  height: 2.75rem; /* 44px — WCAG touch target */
+  padding-inline: var(--space-5);
+  font-size: var(--font-size-sm);
+}
+
+.button--lg {
+  height: 3.25rem; /* 52px */
+  padding-inline: var(--space-6);
+  font-size: var(--font-size-md);
+}
+
+.button--full {
+  width: 100%;
+}
+
+/* --- Variants ------------------------------------------------------------- */
+
+/* Primary — the TrustFund action colour. */
+.button--primary {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+  box-shadow: var(--shadow-sm);
+}
+
+.button--primary:hover:not(:disabled):not(.button--loading) {
+  background-color: var(--color-primary-hover);
+}
+
+.button--primary:active:not(:disabled):not(.button--loading) {
+  background-color: var(--color-primary-active);
+}
+
+/* Secondary — subtle surfaced button. */
+.button--secondary {
+  background-color: var(--color-surface-muted);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.button--secondary:hover:not(:disabled):not(.button--loading) {
+  background-color: var(--color-border);
+}
+
+/* Outline — quiet, keyboard-friendly complement to primary. */
+.button--outline {
+  background-color: transparent;
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+}
+
+.button--outline:hover:not(:disabled):not(.button--loading) {
+  background-color: var(--color-surface-muted);
+}
+
+/* Ghost — no chrome; keeps layout when used inline. */
+.button--ghost {
+  background-color: transparent;
+  color: var(--color-text);
+}
+
+.button--ghost:hover:not(:disabled):not(.button--loading) {
+  background-color: var(--color-surface-muted);
+}
+
+/* Danger — destructive action. */
+.button--danger {
+  background-color: var(--color-danger);
+  color: var(--color-danger-foreground);
+  box-shadow: var(--shadow-sm);
+}
+
+.button--danger:hover:not(:disabled):not(.button--loading) {
+  background-color: var(--color-danger-hover);
+}
+
+/* --- Loading -------------------------------------------------------------- */
+
+.button__spinner {
+  position: absolute;
+  inset-inline-start: 50%;
+  inline-size: 1em;
+  block-size: 1em;
+  margin-inline-start: calc(-1em / 2);
+}
+
+.button--loading .button__label {
+  opacity: 0;
+}
+
+.button__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}

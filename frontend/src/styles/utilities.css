@@ -1,0 +1,76 @@
+/* ============================================================================
+ * TrustFund Utilities
+ *
+ * Small, tokenized helper classes. Keep this file minimal — prefer components
+ * over scattering utility classes. Exceptions: layout + a11y essentials.
+ * ========================================================================== */
+
+/* --- Layout ---------------------------------------------------------------- */
+
+.container {
+  width: 100%;
+  max-width: var(--container-page);
+  margin-inline: auto;
+  padding-inline: var(--spacing-page-x);
+}
+
+/* Content section wrapper with vertical rhythm. */
+.section {
+  padding-block: var(--spacing-section);
+}
+
+@media (min-width: var(--breakpoint-md)) {
+  .section {
+    padding-block: var(--spacing-section-lg);
+  }
+}
+
+/* --- Typography helpers ---------------------------------------------------- */
+
+.overline {
+  font-size: var(--font-size-3xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+/* --- Accessibility ---------------------------------------------------------- */
+
+/* Visually hidden but still exposed to assistive tech. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Revealed into the layout when keyboard-focused (skip links). */
+.skip-link {
+  position: absolute;
+  inset-inline-start: var(--space-4);
+  inset-block-start: var(--space-4);
+  z-index: 1000;
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-200%);
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.skip-link:hover {
+  text-decoration: none;
+  color: var(--color-text);
+}

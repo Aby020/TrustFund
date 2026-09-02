@@ -1,0 +1,102 @@
+/* Dropdown — accessible menu: trigger + floating item list. */
+
+.dropdown-trigger__chevron {
+  transition: transform var(--duration-fast) var(--ease-out-cubic);
+}
+
+.dropdown-trigger[aria-expanded='true'] .dropdown-trigger__chevron {
+  transform: rotate(180deg);
+}
+
+.dropdown-panel {
+  position: absolute;
+  inset-inline-start: 0;
+  z-index: 50;
+  min-inline-size: 12rem;
+  max-inline-size: 18rem;
+  margin-block-start: var(--space-1);
+  padding: var(--space-1);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+
+  animation: dropdown-in var(--duration-fast) var(--ease-out-cubic);
+  transform-origin: top;
+}
+
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown__menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  inline-size: 100%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  text-align: start;
+
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-surface-muted);
+  }
+
+  &:focus-visible {
+    outline: none;
+    background-color: var(--color-surface-muted);
+    box-shadow: inset 0 0 0 var(--ring-width) var(--color-ring);
+  }
+
+  &:disabled {
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+  }
+}
+
+.dropdown__item--danger {
+  color: var(--color-danger);
+}
+
+.dropdown__item--danger:hover:not(:disabled) {
+  background-color: var(--color-danger-soft);
+  color: var(--color-danger-hover);
+}
+
+.dropdown__item-icon {
+  display: inline-flex;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.dropdown__separator {
+  block-size: 1px;
+  margin: var(--space-1) var(--space-2);
+  background-color: var(--color-border);
+}

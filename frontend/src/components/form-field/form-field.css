@@ -1,0 +1,37 @@
+/* FormField — label / hint / error wrapper for consistent form UX. */
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.form-field__label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.form-field__label-required {
+  color: var(--color-danger);
+  margin-inline-start: var(--space-1);
+}
+
+.form-field__hint {
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-subtle);
+}
+
+.form-field__error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-1);
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-danger);
+}
+
+.form-field__error svg {
+  flex-shrink: 0;
+  margin-block-start: 1px;
+}

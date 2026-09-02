@@ -1,0 +1,43 @@
+/* ErrorState — graceful error surface for a failed section/page. */
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-12) var(--space-6);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.error-state__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 3rem;
+  block-size: 3rem;
+  border-radius: var(--radius-full);
+  background-color: var(--color-danger-soft);
+  color: var(--color-danger);
+  margin-block-end: var(--space-1);
+}
+
+.error-state__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-strong);
+}
+
+.error-state__description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  max-inline-size: 32rem;
+}
+
+.error-state__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-block-start: var(--space-4);
+}

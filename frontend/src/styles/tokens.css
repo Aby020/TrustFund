@@ -1,0 +1,321 @@
+/* ============================================================================
+ * TrustFund Design Tokens
+ *
+ * Three-layer token architecture (see AbiLabs `design-system` skill):
+ *   Layer 1 — Primitive tokens  : raw design values (--emerald-600, --space-4)
+ *   Layer 2 — Semantic tokens   : purpose aliases (--color-primary, --radius-md)
+ *   Layer 3 — Component tokens  : component-specific mappings (used in CSS)
+ *
+ * Components must reference semantic tokens only. No raw hex in components.
+ * ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+ * Layer 1: Primitives
+ * ------------------------------------------------------------------------- */
+
+:root {
+  /* --- Brand: emerald accent palette ------------------------------------- */
+  --emerald-50: #ecfdf5;
+  --emerald-100: #d1fae5;
+  --emerald-200: #a7f3d0;
+  --emerald-300: #6ee7b7;
+  --emerald-400: #34d399;
+  --emerald-500: #10b981;
+  --emerald-600: #059669;
+  --emerald-700: #047857;
+  --emerald-800: #065f46;
+  --emerald-900: #064e3b;
+  --emerald-950: #052e22;
+
+  /* --- Brand: deep ink (page text / dark surfaces) ------------------------ */
+  --ink-50: #f2f5f4;
+  --ink-100: #e2e8e6;
+  --ink-200: #c3cdca;
+  --ink-300: #93a19d;
+  --ink-400: #62706c;
+  --ink-500: #485550;
+  --ink-600: #384340;
+  --ink-700: #2d3633;
+  --ink-800: #202725;
+  --ink-900: #161a19;
+  --ink-950: #0c100f;
+
+  /* --- Warm neutral: stone scale ----------------------------------------- */
+  --stone-0: #ffffff;
+  --stone-50: #faf9f7;
+  --stone-100: #f4f2ee;
+  --stone-200: #e8e5df;
+  --stone-300: #d9d5cd;
+  --stone-400: #b9b4aa;
+  --stone-500: #9c968b;
+  --stone-600: #7c766c;
+  --stone-700: #5f5950;
+  --stone-800: #403c36;
+  --stone-900: #2a2723;
+
+  /* --- Status primitives ------------------------------------------------- */
+  --green-50: #f0fdf4;
+  --green-100: #dcfce7;
+  --green-600: #16a34a;
+  --green-700: #15803d;
+
+  --amber-50: #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+
+  --red-50: #fef2f2;
+  --red-100: #fee2e2;
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+
+  --blue-50: #eff6ff;
+  --blue-100: #dbeafe;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+
+  /* --- Spacing scale (4px base) ------------------------------------------ */
+  --space-0: 0;
+  --space-1: 0.25rem;   /*  4px */
+  --space-2: 0.5rem;    /*  8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+
+  /* --- Typography primitives --------------------------------------------- */
+  --font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui,
+    -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  --font-size-3xs: 0.6875rem;  /* 11px — overline/eyebrow */
+  --font-size-2xs: 0.75rem;    /* 12px — labels, meta */
+  --font-size-xs: 0.8125rem;   /* 13px — small body */
+  --font-size-sm: 0.875rem;    /* 14px — body small */
+  --font-size-md: 1rem;        /* 16px — body */
+  --font-size-lg: 1.125rem;    /* 18px — lead */
+  --font-size-xl: 1.25rem;     /* 20px — h3 */
+  --font-size-2xl: 1.5rem;     /* 24px — h2 */
+  --font-size-3xl: 1.875rem;   /* 30px — h1 */
+  --font-size-4xl: 2.25rem;    /* 36px — display */
+  --font-size-5xl: 3rem;       /* 48px — hero */
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-xs: 1.15;      /* display / headings large */
+  --line-height-sm: 1.3;       /* headings */
+  --line-height-md: 1.45;      /* body copy */
+  --line-height-lg: 1.6;       /* long-form / prose */
+
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-normal: 0em;
+  --letter-spacing-wide: 0.03em;
+  --letter-spacing-wider: 0.08em;
+
+  /* --- Radii (restrained on purpose) -------------------------------------- */
+  --radius-xs: 0.25rem;   /*  4px — chips, badges */
+  --radius-sm: 0.375rem;  /*  6px — small controls */
+  --radius-md: 0.5rem;    /*  8px — buttons, inputs */
+  --radius-lg: 0.75rem;   /* 12px — cards */
+  --radius-xl: 1rem;      /* 16px — panels, dialogs */
+  --radius-pill: 999px;
+  --radius-full: 50%;
+
+  /* --- Shadows ------------------------------------------------------------ */
+  --shadow-xs: 0 1px 2px rgb(22 26 25 / 0.05);
+  --shadow-sm: 0 1px 2px rgb(22 26 25 / 0.06), 0 1px 3px rgb(22 26 25 / 0.08);
+  --shadow-md: 0 2px 4px rgb(22 26 25 / 0.05), 0 4px 12px rgb(22 26 25 / 0.08);
+  --shadow-lg: 0 4px 8px rgb(22 26 25 / 0.06), 0 12px 28px rgb(22 26 25 / 0.12);
+  --shadow-xl: 0 8px 16px rgb(22 26 25 / 0.08), 0 24px 48px rgb(22 26 25 / 0.16);
+
+  /* --- Focus ring ---------------------------------------------------------- */
+  --ring-width: 2px;
+  --ring-offset: 2px;
+
+  /* --- Motion primitives --------------------------------------------------- */
+  --duration-instant: 120ms;
+  --duration-fast: 160ms;
+  --duration-normal: 240ms;
+  --duration-slow: 320ms;
+
+  --ease-out-cubic: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.25, 1);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  /* --- Breakpoints --------------------------------------------------------- */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+
+  /* --- Container widths ----------------------------------------------------- */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-page: 1200px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Layer 2: Semantic tokens (light)
+ * --------------------------------------------------------------------------- */
+
+:root {
+  /* Surfaces */
+  --color-bg: var(--stone-50);
+  --color-bg-elevated: var(--stone-0);
+  --color-surface: var(--stone-0);
+  --color-surface-muted: var(--stone-100);
+  --color-surface-subtle: var(--stone-50);
+
+  /* Text */
+  --color-text: var(--ink-900);
+  --color-text-strong: var(--ink-950);
+  --color-text-muted: var(--ink-500);
+  --color-text-subtle: var(--ink-400);
+  --color-text-inverse: var(--stone-0);
+  --color-text-on-accent: var(--stone-0);
+
+  /* Borders */
+  --color-border: var(--stone-200);
+  --color-border-strong: var(--stone-300);
+  --color-border-input: var(--stone-300);
+
+  /* Action / brand */
+  --color-primary: var(--emerald-700);
+  --color-primary-hover: var(--emerald-800);
+  --color-primary-active: var(--emerald-900);
+  --color-primary-soft: var(--emerald-50);
+  --color-primary-foreground: var(--stone-0);
+  --color-ring: var(--emerald-600);
+
+  /* Accent (secondary emphasis) */
+  --color-accent: var(--emerald-600);
+  --color-accent-soft: var(--emerald-50);
+  --color-accent-foreground: var(--stone-0);
+
+  /* Status */
+  --color-success: var(--green-600);
+  --color-success-hover: var(--green-700);
+  --color-success-soft: var(--green-50);
+  --color-success-soft-strong: var(--green-100);
+  --color-success-foreground: var(--green-700);
+
+  --color-warning: var(--amber-600);
+  --color-warning-hover: var(--amber-700);
+  --color-warning-soft: var(--amber-50);
+  --color-warning-soft-strong: var(--amber-100);
+  --color-warning-foreground: var(--amber-700);
+
+  --color-danger: var(--red-600);
+  --color-danger-hover: var(--red-700);
+  --color-danger-soft: var(--red-50);
+  --color-danger-soft-strong: var(--red-100);
+  --color-danger-foreground: var(--red-700);
+
+  --color-info: var(--blue-600);
+  --color-info-hover: var(--blue-700);
+  --color-info-soft: var(--blue-50);
+  --color-info-soft-strong: var(--blue-100);
+  --color-info-foreground: var(--blue-700);
+
+  /* Semantic spacing */
+  --spacing-page-x: var(--space-4);
+  --spacing-page-y: var(--space-6);
+  --spacing-section: var(--space-10);
+  --spacing-section-lg: var(--space-16);
+  --spacing-card-padding: var(--space-6);
+}
+
+/* ---------------------------------------------------------------------------
+ * Layer 2: Semantic tokens (dark) — theme-ready, not forced.
+ * Defined under prefers-color-scheme only.
+ * --------------------------------------------------------------------------- */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --color-bg: var(--ink-950);
+    --color-bg-elevated: var(--ink-900);
+    --color-surface: var(--ink-900);
+    --color-surface-muted: var(--ink-800);
+    --color-surface-subtle: var(--ink-950);
+
+    --color-text: var(--stone-200);
+    --color-text-strong: var(--stone-0);
+    --color-text-muted: var(--stone-400);
+    --color-text-subtle: var(--stone-600);
+    --color-text-inverse: var(--ink-950);
+    --color-text-on-accent: var(--ink-950);
+
+    --color-border: var(--ink-700);
+    --color-border-strong: var(--ink-600);
+    --color-border-input: var(--ink-500);
+
+    --color-primary: var(--emerald-500);
+    --color-primary-hover: var(--emerald-400);
+    --color-primary-active: var(--emerald-300);
+    --color-primary-soft: var(--emerald-950);
+    --color-primary-foreground: var(--ink-950);
+    --color-ring: var(--emerald-400);
+
+    --color-accent: var(--emerald-400);
+    --color-accent-soft: var(--emerald-950);
+    --color-accent-foreground: var(--ink-950);
+
+    --color-success: var(--green-600);
+    --color-success-soft: var(--green-100);
+    --color-success-soft-strong: var(--green-50);
+    --color-success-foreground: var(--green-600);
+
+    --color-warning: var(--amber-600);
+    --color-warning-soft: var(--amber-100);
+    --color-warning-soft-strong: var(--amber-50);
+    --color-warning-foreground: var(--amber-600);
+
+    --color-danger: var(--red-600);
+    --color-danger-soft: var(--red-100);
+    --color-danger-soft-strong: var(--red-50);
+    --color-danger-foreground: var(--red-600);
+
+    --color-info: var(--blue-600);
+    --color-info-soft: var(--blue-100);
+    --color-info-soft-strong: var(--blue-50);
+    --color-info-foreground: var(--blue-600);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Layer 3: Component tokens
+ * --------------------------------------------------------------------------- */
+
+:root {
+  /* Buttons */
+  --button-radius: var(--radius-md);
+  --button-font-weight: var(--font-weight-semibold);
+
+  /* Inputs */
+  --input-radius: var(--radius-md);
+  --input-height-md: 2.75rem;
+  --input-height-lg: 3.25rem;
+
+  /* Cards */
+  --card-radius: var(--radius-lg);
+  --card-border-color: var(--color-border);
+
+  /* Dialog */
+  --dialog-radius: var(--radius-xl);
+  --dialog-max-width: 28rem;
+
+  /* Toasts */
+  --toast-radius: var(--radius-lg);
+  --toast-max-width: 24rem;
+}

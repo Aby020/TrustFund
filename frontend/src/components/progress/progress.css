@@ -1,0 +1,47 @@
+/* Progress — thin determinate track; emerald when in-flow. */
+
+.progress {
+  display: block;
+  inline-size: 100%;
+  block-size: 0.5rem;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-surface-muted);
+  overflow: hidden;
+}
+
+.progress__bar {
+  display: block;
+  block-size: 100%;
+  border-radius: inherit;
+  background-color: var(--color-primary);
+  transition: width var(--duration-normal) var(--ease-out-cubic);
+  min-inline-size: 2%;
+}
+
+/* --- ProgressCircle -------------------------------------------------------- */
+
+.progress-circle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-circle__track {
+  stroke: var(--color-surface-muted);
+}
+
+.progress-circle__value {
+  stroke: var(--color-primary);
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transition: stroke-dashoffset var(--duration-normal) var(--ease-out-cubic);
+}
+
+.progress-circle__label {
+  position: absolute;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}

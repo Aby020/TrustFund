@@ -1,0 +1,31 @@
+/* Spinner — CSS-only, tokenized, reduced-motion aware. */
+
+.spinner {
+  display: inline-block;
+  border-radius: var(--radius-full);
+  border: 2px solid currentColor;
+  border-block-start-color: transparent;
+  animation: spinner-rotate var(--duration-slow) linear infinite;
+  flex-shrink: 0;
+}
+
+.spinner--sm {
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+
+.spinner--md {
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+}
+
+.spinner--lg {
+  inline-size: 2rem;
+  block-size: 2rem;
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
