@@ -49,3 +49,57 @@ export type DonationStatus = 'PENDING' | 'SUCCESS' | 'FAILED' | 'REFUNDED';
 /** Volunteer opportunity status from backend `volunteers.models`. */
 export type OpportunityStatus = 'OPEN' | 'CLOSED' | 'COMPLETED';
 export type ApplicationStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'ATTENDED';
+
+/* -------------------------------------------------------------------------- */
+/*  Authentication API types — mirrors the Django/DRF auth endpoints.         */
+/* -------------------------------------------------------------------------- */
+
+/** User profile returned by /auth/me and inside auth responses. */
+export interface ApiUser {
+  id: number;
+  email: string;
+  first_name: string;
+  last_name: string;
+  full_name: string;
+  role: UserRole;
+  is_active: boolean;
+  date_joined: string;
+}
+
+/** POST /api/v1/auth/login — request body. */
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+/** POST /api/v1/auth/register — request body. */
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  role?: UserRole;
+}
+
+/** POST /api/v1/auth/refresh — request body. */
+export interface RefreshRequest {
+  refresh: string;
+}
+
+/** POST /api/v1/auth/logout — request body. */
+export interface LogoutRequest {
+  refresh: string;
+}
+
+/** Auth response shape returned by login and register endpoints. */
+export interface AuthTokensResponse {
+  user: ApiUser;
+  access: string;
+  refresh: string;
+}
+
+/** Token refresh response. */
+export interface TokenRefreshResponse {
+  access: string;
+  refresh?: string;
+}

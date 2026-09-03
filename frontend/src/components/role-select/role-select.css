@@ -1,0 +1,62 @@
+/* RoleSelect — visual radio-card layout for role selection. */
+
+.role-select {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.role-select__legend {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  margin-block-end: var(--space-3);
+}
+
+.role-select__options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.role-select__option {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.role-select__option:hover {
+  border-color: var(--color-border-strong);
+  background-color: var(--color-surface-subtle);
+}
+
+.role-select__option--selected {
+  border-color: var(--color-ring);
+  background-color: var(--color-primary-soft);
+  box-shadow: 0 0 0 1px var(--color-ring);
+}
+
+.role-select__option:focus-within {
+  outline: var(--ring-width) solid var(--color-ring);
+  outline-offset: var(--ring-offset);
+}
+
+.role-select__option-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-strong);
+}
+
+.role-select__option-desc {
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-md);
+}

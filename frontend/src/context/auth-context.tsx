@@ -1,55 +1,176 @@
 /**
- * auth-context — the authentication *shape* only.
+ * auth-context — the real authenticated state for TrustFund.
  *
- * Task 13A intentionally provides a stub: `useAuth()` already exposes the
- * contract future pages and the AppShell will consume, but no network calls
- * happen here yet. Task 13B plugs in real login/logout behind this same API,
- * so pages written against `useAuth()` won't change.
+ * Provides:
+ *  - current user
+ *  - authentication loading state
+ *  - login / register / logout
+ *  - session restoration on mount (reads stored tokens → fetches /me)
+ *  - session-expired callback for token refresh failures
+ *
+ * Token refresh is handled by services/auth.ts; this context reacts to
+ * session expiry by transitioning to anonymous state.
  */
 
-import { createContext, useCallback, useContext, useMemo, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
+import {
+  login as apiLogin,
+  register as apiRegister,
+  logout as apiLogout,
+  getCurrentUser,
+  setSessionExpiredHandler,
+} from '@/services/auth';
+import type { ApiUser, UserRole } from '@/types/api';
 
 export type AuthStatus =
-  | 'authenticated' // access token present
-  | 'anonymous' // logged out
-  | 'restoring'; // (future) validating a stored token on boot
+  | 'authenticated'
+  | 'anonymous'
+  | 'restoring';
 
 export interface AuthUser {
   id: number;
   email: string;
   firstName: string;
   lastName: string;
-  role: 'DONOR' | 'CHARITY' | 'VOLUNTEER' | 'ADMIN';
+  role: UserRole;
 }
 
 export interface AuthContextValue {
   status: AuthStatus;
   user: AuthUser | null;
-  /** Login + logout are no-ops until Task 13B wires the JWT endpoints. */
   login: (email: string, password: string) => Promise<void>;
+  register: (data: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    role?: UserRole;
+  }) => Promise<void>;
   logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+/* -------------------------------------------------------------------------- */
+/*  Helpers                                                                   */
+/* -------------------------------------------------------------------------- */
+
+/** Map the API user shape (snake_case) to the frontend AuthUser shape. */
+function toAuthUser(api: ApiUser): AuthUser {
+  return {
+    id: api.id,
+    email: api.email,
+    firstName: api.first_name,
+    lastName: api.last_name,
+    role: api.role,
+  };
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Provider                                                                  */
+/* -------------------------------------------------------------------------- */
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const login = useCallback(async (_email: string, _password: string) => {
-    // Intentionally unimplemented in 13A — see file header.
-    throw new Error('Authentication will be wired in Task 13B.');
+  const [status, setStatus] = useState<AuthStatus>('restoring');
+  const [user, setUser] = useState<AuthUser | null>(null);
+
+  // Guard against state updates after unmount.
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
   }, []);
 
+  /* --- Session restoration on mount --------------------------------------- */
+  useEffect(() => {
+    let cancelled = false;
+
+    async function restore() {
+      try {
+        const me = await getCurrentUser();
+        if (!cancelled && mountedRef.current) {
+          setUser(toAuthUser(me));
+          setStatus('authenticated');
+        }
+      } catch {
+        // No valid session — stay anonymous.
+        if (!cancelled && mountedRef.current) {
+          setUser(null);
+          setStatus('anonymous');
+        }
+      }
+    }
+
+    restore();
+
+    return () => { cancelled = true; };
+  }, []);
+
+  /* --- Session expiry handler (from services/auth.ts) --------------------- */
+  const handleSessionExpired = useCallback(() => {
+    if (mountedRef.current) {
+      setUser(null);
+      setStatus('anonymous');
+    }
+  }, []);
+
+  useEffect(() => {
+    setSessionExpiredHandler(handleSessionExpired);
+    return () => setSessionExpiredHandler(() => {});
+  }, [handleSessionExpired]);
+
+  /* --- Login -------------------------------------------------------------- */
+  const login = useCallback(async (email: string, password: string) => {
+    const response = await apiLogin({ email, password });
+    if (mountedRef.current) {
+      setUser(toAuthUser(response.user));
+      setStatus('authenticated');
+    }
+  }, []);
+
+  /* --- Register ----------------------------------------------------------- */
+  const registerUser = useCallback(async (data: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    role?: UserRole;
+  }) => {
+    const response = await apiRegister({
+      email: data.email,
+      password: data.password,
+      first_name: data.firstName,
+      last_name: data.lastName,
+      role: data.role,
+    });
+    if (mountedRef.current) {
+      setUser(toAuthUser(response.user));
+      setStatus('authenticated');
+    }
+  }, []);
+
+  /* --- Logout ------------------------------------------------------------- */
   const logout = useCallback(async () => {
-    // Intentionally unimplemented in 13A.
+    await apiLogout();
+    if (mountedRef.current) {
+      setUser(null);
+      setStatus('anonymous');
+    }
   }, []);
 
+  /* --- Context value ------------------------------------------------------ */
   const value = useMemo<AuthContextValue>(
-    () => ({
-      status: 'anonymous',
-      user: null,
-      login,
-      logout,
-    }),
-    [login, logout],
+    () => ({ status, user, login, register: registerUser, logout }),
+    [status, user, login, registerUser, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

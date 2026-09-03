@@ -1,0 +1,67 @@
+/* RegisterPage — form layout and styling. */
+
+.register-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.register-page__form-error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  margin-block-end: var(--space-5);
+  background-color: var(--color-danger-soft);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.register-page__form-error svg {
+  flex-shrink: 0;
+}
+
+.register-page__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin-block-end: var(--space-6);
+}
+
+.register-page__name-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+@media (max-width: 480px) {
+  .register-page__name-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+}
+
+.register-page__strength {
+  margin-block-start: var(--space-1);
+}
+
+.register-page__actions {
+  margin-block-end: var(--space-5);
+}
+
+.register-page__footer {
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.register-page__link {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+}
+
+.register-page__link:hover {
+  text-decoration: underline;
+}

@@ -55,3 +55,13 @@ export { Icon } from './icon/icon';
 export type { IconProps, IconName } from './icon/icon';
 export { Brand } from './brand/brand';
 export type { BrandProps } from './brand/brand';
+
+export { PasswordField } from './password-field/password-field';
+export type { PasswordFieldProps } from './password-field/password-field';
+export { PasswordStrength, evaluateStrength } from './password-strength/password-strength';
+export type { PasswordStrengthProps, StrengthLevel } from './password-strength/password-strength';
+export { RoleSelect } from './role-select/role-select';
+export type { RoleSelectProps } from './role-select/role-select';
+
+export { default as ProtectedRoute } from './protected-route/protected-route';
+export { default as RequireRole } from './require-role/require-role';
