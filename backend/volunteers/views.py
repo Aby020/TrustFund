@@ -3,6 +3,7 @@ Views and ViewSets for Volunteer Management domain.
 """
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
 from .models import VolunteerOpportunity, VolunteerApplication, ApplicationStatus
@@ -54,18 +55,31 @@ class VolunteerOpportunityViewSet(viewsets.ModelViewSet):
 class IsVolunteerApplicantOrCharityOwnerOrAdmin(permissions.BasePermission):
     """
     Permission for volunteer applications:
-    - Volunteers can view/create their own applications.
+    - Volunteers can create applications and view their own.
     - Charity owners can view and update application status for their organization's opportunities.
     - Admins can view/manage all.
+    - Donors cannot create or manage volunteer applications.
     """
     def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated
+        if not request.user or not request.user.is_authenticated:
+            return False
+
+        # Volunteer can create (POST) or list (GET) their own
+        if request.user.role == Role.VOLUNTEER:
+            return True
+
+        # Charity and Admin can manage applications
+        if request.user.role in (Role.CHARITY, Role.ADMIN):
+            return True
+
+        # Donors have no application permissions
+        return False
 
     def has_object_permission(self, request, view, obj):
         user = request.user
         if user.is_staff or user.is_superuser or user.role == Role.ADMIN:
             return True
-        if user.role == Role.DONOR and obj.volunteer == user:
+        if user.role == Role.VOLUNTEER and obj.volunteer == user:
             return True
         if user.role == Role.CHARITY and obj.opportunity.charity_organization.owner == user:
             return True
@@ -86,12 +100,18 @@ class VolunteerApplicationViewSet(viewsets.ModelViewSet):
 
         if user.is_staff or user.is_superuser or user.role == Role.ADMIN:
             return VolunteerApplication.objects.select_related('opportunity__charity_organization', 'volunteer').all()
-        elif user.role == Role.DONOR:
+        elif user.role == Role.VOLUNTEER:
             return VolunteerApplication.objects.select_related('opportunity__charity_organization', 'volunteer').filter(volunteer=user)
         elif user.role == Role.CHARITY:
             return VolunteerApplication.objects.select_related('opportunity__charity_organization', 'volunteer').filter(opportunity__charity_organization__owner=user)
 
         return VolunteerApplication.objects.none()
+
+    def create(self, request, *args, **kwargs):
+        """Only VOLUNTEER role users may create volunteer applications."""
+        if request.user.role != Role.VOLUNTEER:
+            raise PermissionDenied('Only users with VOLUNTEER role can create volunteer applications.')
+        return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         serializer.save(volunteer=self.request.user)

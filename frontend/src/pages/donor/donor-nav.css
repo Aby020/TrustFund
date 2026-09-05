@@ -1,0 +1,45 @@
+/* ---- DonorNav — authenticated donor sub-navigation ----------------------- */
+
+.donor-nav {
+  display: flex;
+  gap: var(--space-1);
+  overflow-x: auto;
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.donor-nav__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm, var(--font-size-sm));
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--duration-fast) var(--ease-out-cubic),
+    background-color var(--duration-fast) var(--ease-out-cubic);
+}
+
+.donor-nav__link:hover {
+  color: var(--color-text);
+  background-color: var(--color-surface-muted);
+}
+
+.donor-nav__link:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+.donor-nav__link.is-active {
+  color: var(--color-primary);
+  background-color: var(--color-primary-soft);
+}
+
+@media (min-width: 768px) {
+  .donor-nav {
+    overflow: visible;
+  }
+}

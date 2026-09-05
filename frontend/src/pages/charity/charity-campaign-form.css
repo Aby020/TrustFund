@@ -1,0 +1,160 @@
+/* ---- CharityCampaignForm — create/edit campaign form --------------------- */
+
+.charity-campaign-form {
+  padding: var(--space-6) 0 var(--space-10);
+}
+
+.charity-campaign-form__header {
+  margin-top: var(--space-8);
+}
+
+.charity-campaign-form__overline {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.charity-campaign-form__title {
+  margin: 0;
+  font-size: var(--font-size-3xl, 2rem);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.charity-campaign-form__subtitle {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-muted);
+}
+
+.charity-campaign-form__skeleton {
+  margin-top: var(--space-6);
+}
+
+.charity-campaign-form__card {
+  margin-top: var(--space-6);
+}
+
+.charity-campaign-form__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.charity-campaign-form__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+/* ---- Image upload dropzone --------------------------------------------- */
+
+.charity-campaign-form__dropzone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  border: 2px dashed var(--color-border, #d1d5db);
+  border-radius: var(--radius-md, 12px);
+  background: var(--color-surface-muted, #f9fafb);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  text-align: center;
+}
+
+.charity-campaign-form__dropzone:hover,
+.charity-campaign-form__dropzone:focus-visible {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft, #eef2ff);
+  outline: none;
+}
+
+.charity-campaign-form__dropzone--drag {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft, #eef2ff);
+}
+
+.charity-campaign-form__dropzone-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-5);
+}
+
+.charity-campaign-form__dropzone-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-surface, #fff);
+  color: var(--color-primary);
+}
+
+.charity-campaign-form__dropzone-title {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.charity-campaign-form__dropzone-link {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.charity-campaign-form__dropzone-hint {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.charity-campaign-form__preview {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  border-radius: var(--radius-md, 12px);
+  overflow: hidden;
+}
+
+.charity-campaign-form__preview-img {
+  display: block;
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.charity-campaign-form__preview-actions {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background: var(--color-surface-muted, #f3f4f6);
+}
+
+.charity-campaign-form__file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.charity-campaign-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+@media (min-width: 768px) {
+  .charity-campaign-form__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

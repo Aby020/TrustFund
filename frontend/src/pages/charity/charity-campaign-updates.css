@@ -1,0 +1,128 @@
+/* ---- CharityCampaignUpdates — campaign update timeline management --------- */
+
+.charity-updates {
+  padding: var(--space-6) 0 var(--space-10);
+}
+
+.charity-updates__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-top: var(--space-8);
+}
+
+.charity-updates__overline {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.charity-updates__title {
+  margin: 0;
+  font-size: var(--font-size-3xl, 2rem);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.charity-updates__subtitle {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-muted);
+}
+
+.charity-updates__skeleton {
+  margin-top: var(--space-6);
+}
+
+.charity-updates__layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  margin-top: var(--space-6);
+}
+
+.charity-updates__composer-title {
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.charity-updates__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.charity-updates__composer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.charity-updates__list-title {
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.charity-updates__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.charity-updates__item {
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.charity-updates__item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.charity-updates__item-title {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.charity-updates__item-actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.charity-updates__item-content {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-muted);
+  white-space: pre-wrap;
+}
+
+.charity-updates__item-meta {
+  display: block;
+  margin-top: var(--space-3);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+@media (min-width: 1024px) {
+  .charity-updates__layout {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}

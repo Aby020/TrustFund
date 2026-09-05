@@ -60,11 +60,28 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const show = useCallback(
     (options: ToastOptions) => {
-      const id = ++nextId.current;
       const tone = options.tone ?? 'info';
-      const item: ToastItem = { id, title: options.title, description: options.description, tone };
+      const id = ++nextId.current;
+      const item: ToastItem = {
+        id,
+        title: options.title,
+        description: options.description,
+        tone,
+      };
 
-      setToasts((current) => [...current, item]);
+      // Dedupe identical toasts that are already visible — repeated failed
+      // submissions must not stack N copies of the same message (errors never
+      // auto-dismiss, so they would otherwise pile up).
+      setToasts((current) => {
+        const alreadyVisible = current.some(
+          (toast) =>
+            toast.tone === tone &&
+            toast.title === item.title &&
+            toast.description === item.description,
+        );
+        if (alreadyVisible) return current;
+        return [...current, item];
+      });
 
       const duration =
         options.duration ?? (tone === 'error' ? 0 : DEFAULT_DURATION);

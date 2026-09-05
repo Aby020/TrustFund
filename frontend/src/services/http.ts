@@ -24,6 +24,8 @@ export const REQUEST_TIMEOUT_MS = 15_000;
 
 export interface RequestOptions extends Omit<RequestInit, 'body'> {
   json?: unknown;
+  /** FormData body — sent as multipart; Content-Type is set by the browser. */
+  formData?: FormData;
   /** Query params appended to the URL. */
   params?: Record<string, string | number | boolean | null | undefined>;
   /** Skip the Authorization header. */
@@ -45,7 +47,7 @@ export function setUnauthorizedHandler(handler: (cause: ApiError) => void): void
 }
 
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { json, params, auth = true, headers, ...rest } = options;
+  const { json, formData, params, auth = true, headers, ...rest } = options;
 
   const url = buildUrl(path, params);
   const controller = new AbortController();
@@ -57,6 +59,8 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   if (json !== undefined) {
     requestHeaders.set('Content-Type', 'application/json');
   }
+  // When formData is set we intentionally omit Content-Type so the browser
+  // can set the correct multipart boundary automatically.
 
   if (auth && tokenProvider) {
     const token = tokenProvider();
@@ -68,7 +72,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
       ...rest,
       headers: requestHeaders,
       signal: controller.signal,
-      body: json !== undefined ? JSON.stringify(json) : undefined,
+      body: formData !== undefined ? formData : json !== undefined ? JSON.stringify(json) : undefined,
     });
 
     if (response.status === 401) {
@@ -109,6 +113,12 @@ export const http = {
     request<T>(path, { ...options, method: 'PUT', json }),
   delete: <T>(path: string, options?: RequestOptions) =>
     request<T>(path, { ...options, method: 'DELETE' }),
+  /** POST with FormData (multipart). */
+  postForm: <T>(path: string, formData: FormData, options?: RequestOptions) =>
+    request<T>(path, { ...options, method: 'POST', formData }),
+  /** PATCH with FormData (multipart). */
+  patchForm: <T>(path: string, formData: FormData, options?: RequestOptions) =>
+    request<T>(path, { ...options, method: 'PATCH', formData }),
 };
 
 /* ------------------------------------------------------------------------- */

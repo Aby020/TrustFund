@@ -94,3 +94,24 @@ function toNumber(value: number | string): number {
   const parsed = Number.parseFloat(value);
   return Number.isFinite(parsed) ? parsed : 0;
 }
+
+/**
+ * ISO → compact date + time, e.g. "2026-09-02T18:30:00Z" → "2 Sep 2026, 6:30 pm".
+ * Used for volunteer opportunity event times, which carry a time-of-day.
+ * Invalid input returns the input unchanged rather than "Invalid Date".
+ */
+export function formatDateTime(iso: string | null | undefined): string {
+  if (!iso) return '—';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  const day = date.toLocaleDateString(APP_LOCALE, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+  const time = date.toLocaleTimeString(APP_LOCALE, {
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+  return `${day}, ${time}`;
+}

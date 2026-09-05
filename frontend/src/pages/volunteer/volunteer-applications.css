@@ -1,0 +1,108 @@
+/* ---- VolunteerApplications — my applications ------------------------------ */
+
+.volunteer-applications {
+  padding: var(--space-6) 0 var(--space-10);
+}
+
+.volunteer-applications__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-top: var(--space-8);
+}
+
+.volunteer-applications__overline {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.volunteer-applications__title {
+  margin: 0;
+  font-size: var(--font-size-3xl, 2rem);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.volunteer-applications__subtitle {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-muted);
+}
+
+.volunteer-applications__filter {
+  margin-top: var(--space-6);
+  max-width: 260px;
+}
+
+.volunteer-applications__list {
+  list-style: none;
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.volunteer-applications__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: border-color var(--duration-fast) var(--ease-out-cubic),
+    background-color var(--duration-fast) var(--ease-out-cubic);
+}
+
+.volunteer-applications__row:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-surface-muted);
+}
+
+.volunteer-applications__icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.volunteer-applications__main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.volunteer-applications__title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.volunteer-applications__org {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.volunteer-applications__meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+}
+
+.volunteer-applications__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}

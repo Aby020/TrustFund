@@ -1,0 +1,166 @@
+/* ---- CharityOrganization — organization profile & verification ----------- */
+
+.charity-org {
+  padding: var(--space-6) 0 var(--space-10);
+}
+
+.charity-org__header {
+  margin-top: var(--space-8);
+}
+
+.charity-org__overline {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.charity-org__title {
+  margin: 0;
+  font-size: var(--font-size-3xl, 2rem);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.charity-org__subtitle {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-muted);
+}
+
+.charity-org__skeleton {
+  margin-top: var(--space-6);
+}
+
+/* ---- Verification status banner ---- */
+
+.charity-org__status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-top: var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.charity-org__status-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.charity-org__status-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+}
+
+.charity-org__status-date {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.charity-org__status-reason {
+  flex-basis: 100%;
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-danger, var(--color-text-muted));
+}
+
+/* ---- Form card ---- */
+
+.charity-org__card {
+  margin-top: var(--space-6);
+}
+
+.charity-org__form-title {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.charity-org__form-subtitle {
+  margin: 0 0 var(--space-5);
+  color: var(--color-text-muted);
+}
+
+.charity-org__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin-top: var(--space-5);
+}
+
+.charity-org__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+.charity-org__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ---- History ---- */
+
+.charity-org__history {
+  margin-top: var(--space-6);
+}
+
+.charity-org__history-title {
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.charity-org__history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.charity-org__history-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+}
+
+.charity-org__history-action {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.charity-org__history-meta {
+  color: var(--color-text-muted);
+}
+
+.charity-org__history-reason {
+  flex-basis: 100%;
+  color: var(--color-text-muted);
+}
+
+/* ---- Responsive ---- */
+
+@media (min-width: 768px) {
+  .charity-org__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

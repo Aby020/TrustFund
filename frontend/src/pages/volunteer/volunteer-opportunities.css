@@ -1,0 +1,178 @@
+/* ---- VolunteerOpportunities — discovery list ------------------------------ */
+
+.volunteer-opportunities {
+  padding: var(--space-6) 0 var(--space-10);
+}
+
+.volunteer-opportunities__header {
+  margin-top: var(--space-8);
+}
+
+.volunteer-opportunities__overline {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.volunteer-opportunities__title {
+  margin: 0;
+  font-size: var(--font-size-3xl, 2rem);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.volunteer-opportunities__subtitle {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-muted);
+}
+
+/* ---- Filters ---- */
+
+.volunteer-opportunities__filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+.volunteer-opportunities__search {
+  flex: 1;
+}
+
+.volunteer-opportunities__count {
+  margin: var(--space-4) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ---- Grid ---- */
+
+.volunteer-opportunities__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.volunteer-opportunities__card {
+  height: 100%;
+}
+
+.volunteer-opportunities__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.volunteer-opportunities__card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.volunteer-opportunities__org {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.volunteer-opportunities__badges {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.volunteer-opportunities__title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+}
+
+.volunteer-opportunities__title a {
+  color: var(--color-text);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out-cubic);
+}
+
+.volunteer-opportunities__title a:hover {
+  color: var(--color-primary);
+}
+
+.volunteer-opportunities__campaign {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.volunteer-opportunities__desc {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.volunteer-opportunities__meta {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.volunteer-opportunities__meta li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.volunteer-opportunities__card-cta {
+  margin-top: auto;
+  padding-top: var(--space-1);
+}
+
+/* ---- Skeleton ---- */
+
+.volunteer-opportunities__skeleton {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+/* ---- Responsive ---- */
+
+@media (min-width: 640px) {
+  .volunteer-opportunities__filters {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .volunteer-opportunities__filters > .volunteer-opportunities__search {
+    min-width: 0;
+  }
+
+  .volunteer-opportunities__grid,
+  .volunteer-opportunities__skeleton {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .volunteer-opportunities__grid,
+  .volunteer-opportunities__skeleton {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

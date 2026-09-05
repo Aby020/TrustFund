@@ -29,8 +29,9 @@ class DonationViewSet(viewsets.ModelViewSet):
     """
     queryset = Donation.objects.select_related('donor', 'campaign', 'campaign__organization').all()
     serializer_class = DonationSerializer
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_fields = ['status', 'currency', 'is_anonymous', 'campaign']
+    search_fields = ['campaign__title', 'message']
     ordering_fields = ['created_at', 'amount']
     ordering = ['-created_at']
 

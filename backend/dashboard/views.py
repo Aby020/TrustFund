@@ -13,6 +13,7 @@ from donations.models import Donation, DonationStatus
 from charities.models import CharityOrganization, VerificationStatus
 from volunteers.models import VolunteerOpportunity, VolunteerApplication, ApplicationStatus
 from receipts.models import Receipt
+from users.permissions import IsDonor
 
 
 class DonorDashboardView(views.APIView):
@@ -20,7 +21,7 @@ class DonorDashboardView(views.APIView):
     Dashboard API for Donors.
     Provides total donated, campaigns supported, total tax receipts, and recent donations/notifications.
     """
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsDonor]
 
     def get(self, request):
         user = request.user
@@ -30,6 +31,7 @@ class DonorDashboardView(views.APIView):
         total_donated = Decimal(total_donated).quantize(Decimal('0.01'))
         campaigns_supported = donations.values('campaign').distinct().count()
         total_receipts = Receipt.objects.filter(donor=user).count()
+        donation_count = Donation.objects.filter(donor=user).count()
 
         recent_donations = donations.select_related('campaign', 'campaign__organization').order_by('-created_at')[:5]
         donations_data = [{
@@ -42,6 +44,7 @@ class DonorDashboardView(views.APIView):
 
         return Response({
             'total_donated': str(total_donated),
+            'donation_count': donation_count,
             'campaigns_supported': campaigns_supported,
             'total_receipts': total_receipts,
             'recent_donations': donations_data,
@@ -57,8 +60,17 @@ class CharityDashboardView(views.APIView):
 
     def get(self, request):
         user = request.user
-        if not user.is_charity() or not hasattr(user, 'charity_organization'):
-            return Response({'error': 'User does not own a charity organization.'}, status=status.HTTP_403_FORBIDDEN)
+        if not user.is_charity():
+            return Response({'error': 'Charity access required.'}, status=status.HTTP_403_FORBIDDEN)
+
+        if not hasattr(user, 'charity_organization'):
+            return Response({
+                'organization': None,
+                'campaigns_count': 0,
+                'active_campaigns_count': 0,
+                'total_raised': '0.00',
+                'recent_donations': [],
+            }, status=status.HTTP_200_OK)
 
         org = user.charity_organization
         campaigns = Campaign.objects.filter(organization=org)

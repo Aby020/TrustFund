@@ -1,0 +1,286 @@
+/* ---- CampaignDetail — full campaign page ---------------------------------- */
+
+/* Hero */
+.campaign-detail__hero {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+  padding: var(--space-8) 0 var(--space-4);
+}
+
+/* Hero image — the same campaign.image shown on the discovery card, promoted
+   to a large lead visual. aspect-ratio + object-fit avoid layout shift. */
+.campaign-detail__hero-image {
+  margin-bottom: var(--space-6);
+}
+
+.campaign-detail__hero-img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+  border-radius: var(--radius-xl);
+}
+
+.campaign-detail__hero-placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-xl);
+  color: white;
+  opacity: 0.9;
+}
+
+.campaign-detail__hero-placeholder--medical { background: linear-gradient(135deg, #dc2626 0%, #f87171 100%); }
+.campaign-detail__hero-placeholder--education { background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%); }
+.campaign-detail__hero-placeholder--disaster_relief { background: linear-gradient(135deg, #d97706 0%, #fbbf24 100%); }
+.campaign-detail__hero-placeholder--environment { background: linear-gradient(135deg, #16a34a 0%, #4ade80 100%); }
+.campaign-detail__hero-placeholder--animals { background: linear-gradient(135deg, #9333ea 0%, #c084fc 100%); }
+.campaign-detail__hero-placeholder--community { background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%); }
+.campaign-detail__hero-placeholder--children { background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%); }
+.campaign-detail__hero-placeholder--food { background: linear-gradient(135deg, #ea580c 0%, #fb923c 100%); }
+.campaign-detail__hero-placeholder--poverty { background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%); }
+.campaign-detail__hero-placeholder--other { background: linear-gradient(135deg, #475569 0%, #94a3b8 100%); }
+
+.campaign-detail__hero-content {
+  max-width: 720px;
+}
+
+.campaign-detail__hero-kicker {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.campaign-detail__verified {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  color: var(--color-success, var(--text-secondary));
+}
+
+.campaign-detail__verified svg {
+  flex-shrink: 0;
+}
+
+.campaign-detail__hero-skeleton {
+  background: var(--bg-secondary);
+  padding: var(--space-12) 0 var(--space-8);
+}
+
+.campaign-detail__category-badge {
+  margin-bottom: 0;
+}
+
+.campaign-detail__title {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  line-height: var(--leading-tight);
+  margin: 0 0 var(--space-2);
+}
+
+.campaign-detail__org {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .campaign-detail__hero {
+    padding-top: var(--space-12);
+  }
+}
+
+/* Two-column layout */
+.campaign-detail__layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  padding: var(--space-8) 0 var(--space-16);
+}
+
+@media (min-width: 768px) {
+  .campaign-detail__layout {
+    grid-template-columns: 1fr 360px;
+  }
+}
+
+/* Main content */
+.campaign-detail__main {
+  min-width: 0;
+}
+
+.campaign-detail__section {
+  padding-top: 0;
+}
+
+.campaign-detail__description {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+}
+
+.campaign-detail__description p {
+  margin: 0 0 var(--space-4);
+}
+
+.campaign-detail__error {
+  display: grid;
+  place-items: center;
+  min-height: 50vh;
+  padding: var(--space-8) 0;
+}
+
+/* Updates */
+.campaign-detail__updates {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.campaign-detail__update {
+  border-left: 2px solid var(--border-primary);
+  padding-left: var(--space-5);
+}
+
+.campaign-detail__update-header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.campaign-detail__update-title {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.campaign-detail__update-date {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+.campaign-detail__update-content {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+  margin: 0 0 var(--space-2);
+}
+
+.campaign-detail__update-author {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin: 0;
+  font-style: italic;
+}
+
+/* Sidebar — funding card */
+.campaign-detail__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.campaign-detail__funding-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  position: sticky;
+  top: var(--space-4);
+}
+
+.campaign-detail__funding-amounts {
+  display: flex;
+  flex-direction: column;
+}
+
+.campaign-detail__raised {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+}
+
+.campaign-detail__goal {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.campaign-detail__funding-meta {
+  display: flex;
+  gap: var(--space-6);
+}
+
+.campaign-detail__meta-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.campaign-detail__meta-value {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+}
+
+.campaign-detail__meta-label {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+.campaign-detail__donate-link {
+  text-decoration: none;
+}
+
+.campaign-detail__trust-note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin: 0;
+  line-height: var(--leading-relaxed);
+}
+
+.campaign-detail__trust-note svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Dates card */
+.campaign-detail__dates-card {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+}
+
+.campaign-detail__dates-title {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-3);
+}
+
+.campaign-detail__dates-list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+}
+
+.campaign-detail__dates-list dt {
+  color: var(--text-tertiary);
+}
+
+.campaign-detail__dates-list dd {
+  color: var(--text-primary);
+  margin: 0;
+}

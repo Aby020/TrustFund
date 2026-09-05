@@ -3,6 +3,7 @@ import {
   formatCurrency,
   formatCurrencyPrecise,
   formatDate,
+  formatDateTime,
   formatNumber,
   formatPercent,
   formatRelativeDay,
@@ -52,6 +53,19 @@ describe('format — dates', () => {
     expect(formatDate(null)).toBe('—');
     expect(formatDate('')).toBe('—');
     expect(formatDate('not-a-date')).toBe('not-a-date');
+  });
+
+  it('renders compact date and time from an ISO datetime', () => {
+    // CLDR versions differ on the September abbreviation ("Sep" vs "Sept"),
+    // and the rendered day follows the runner's local timezone — assert the
+    // shape (Sep 2026, time in 12-hour form) rather than one exact value.
+    const out = formatDateTime('2026-09-02T18:30:00Z');
+    expect(out).toMatch(/^\d{1,2} Sep(t)? 2026, \d{1,2}:\d{2} (am|pm)$/);
+  });
+
+  it('returns a dash for missing datetimes', () => {
+    expect(formatDateTime(null)).toBe('—');
+    expect(formatDateTime('')).toBe('—');
   });
 
   it('labels today and yesterday relatively', () => {

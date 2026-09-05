@@ -1,0 +1,79 @@
+/* ---- DonationSuccess — post-donation confirmation ------------------------- */
+
+.donation-success {
+  padding: var(--space-16) 0;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+}
+
+.donation-success__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.donation-success__icon {
+  margin-bottom: var(--space-6);
+}
+
+.donation-success__title {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-3);
+}
+
+.donation-success__message {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+  margin: 0 0 var(--space-2);
+  max-width: 480px;
+}
+
+.donation-success__receipt-note {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  margin: 0 0 var(--space-8);
+  max-width: 400px;
+}
+
+.donation-success__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 320px;
+}
+
+.donation-success__action-link {
+  text-decoration: none;
+}
+
+/* Trust note */
+.donation-success__trust {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-top: var(--space-10);
+  padding: var(--space-4);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  max-width: 440px;
+  text-align: left;
+}
+
+.donation-success__trust svg {
+  flex-shrink: 0;
+  color: var(--color-emerald-500);
+  margin-top: 2px;
+}
+
+.donation-success__trust p {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  line-height: var(--leading-relaxed);
+  margin: 0;
+}

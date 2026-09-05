@@ -98,6 +98,7 @@ class TestDashboardsAndAnalytics:
         assert response.status_code == status.HTTP_200_OK
         data = response.data
         assert data['total_donated'] == '5000.00'
+        assert data['donation_count'] == 1
         assert data['campaigns_supported'] == 1
         assert data['total_receipts'] == 1
         assert len(data['recent_donations']) == 1
@@ -122,6 +123,54 @@ class TestDashboardsAndAnalytics:
         url = reverse('charity-dashboard')
         response = self.client.get(url)
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_charity_dashboard_no_org_returns_empty(self):
+        """Charity user without an organization gets 200 with null org and zeroed stats."""
+        charity_no_org = User.objects.create_user(
+            email='newcharity@example.com',
+            password='Password123!',
+            role='CHARITY',
+            first_name='New',
+            last_name='Charity',
+        )
+        self.client.force_authenticate(user=charity_no_org)
+        url = reverse('charity-dashboard')
+        response = self.client.get(url)
+
+        assert response.status_code == status.HTTP_200_OK
+        data = response.data
+        assert data['organization'] is None
+        assert data['campaigns_count'] == 0
+        assert data['active_campaigns_count'] == 0
+        assert data['total_raised'] == '0.00'
+        assert data['recent_donations'] == []
+
+    def test_charity_dashboard_forbidden_for_volunteer(self):
+        """Volunteer users cannot access charity dashboard."""
+        volunteer = User.objects.create_user(
+            email='volunteer@example.com',
+            password='Password123!',
+            role='VOLUNTEER',
+            first_name='Vol',
+            last_name='unteer',
+        )
+        self.client.force_authenticate(user=volunteer)
+        url = reverse('charity-dashboard')
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_charity_dashboard_forbidden_for_admin(self):
+        """Admin users cannot access charity dashboard (not a charity role)."""
+        self.client.force_authenticate(user=self.admin)
+        url = reverse('charity-dashboard')
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_charity_dashboard_unauthenticated(self):
+        """Unauthenticated requests to charity dashboard return 401."""
+        url = reverse('charity-dashboard')
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_admin_dashboard(self):
         """System admin can view system-wide stats."""

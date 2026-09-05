@@ -16,8 +16,12 @@ class CampaignSerializer(serializers.ModelSerializer):
     """Read serializer for campaign list/detail (safe public fields)."""
 
     organization_name = serializers.CharField(source='organization.name', read_only=True)
+    organization_verified = serializers.BooleanField(
+        source='organization.is_verified', read_only=True
+    )
     category_display = serializers.CharField(source='get_category_display', read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = Campaign
@@ -25,6 +29,7 @@ class CampaignSerializer(serializers.ModelSerializer):
             'id',
             'organization',
             'organization_name',
+            'organization_verified',
             'title',
             'description',
             'category',
@@ -32,6 +37,7 @@ class CampaignSerializer(serializers.ModelSerializer):
             'goal_amount',
             'raised_amount',
             'location',
+            'image',
             'start_date',
             'end_date',
             'status',
@@ -40,6 +46,15 @@ class CampaignSerializer(serializers.ModelSerializer):
             'updated_at',
         ]
         read_only_fields = fields
+
+    def get_image(self, obj):
+        """Return an absolute URL for the campaign image when one is set."""
+        if not obj.image:
+            return None
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(obj.image.url)
+        return obj.image.url
 
 
 class CampaignWriteSerializer(serializers.ModelSerializer):
@@ -71,6 +86,7 @@ class CampaignWriteSerializer(serializers.ModelSerializer):
             'category',
             'goal_amount',
             'location',
+            'image',
             'start_date',
             'end_date',
             'status',
@@ -101,6 +117,12 @@ class CampaignWriteSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     'Goal amount cannot be less than the amount already raised.'
                 )
+        return value
+
+    def validate_image(self, value):
+        """Enforce the 5 MB upload limit (matches the frontend constraint)."""
+        if value is not None and value.size > 5 * 1024 * 1024:
+            raise serializers.ValidationError('Image must be 5 MB or smaller.')
         return value
 
     def validate(self, attrs):

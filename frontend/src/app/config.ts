@@ -40,6 +40,8 @@ export const AUTH_ROUTES = {
 /** Secondary / account destinations surfaced in the authenticated shell. */
 export const ACCOUNT_NAV: AppNavItem[] = [
   { label: 'Dashboard', to: AUTH_ROUTES.dashboard, match: ['/dashboard'] },
+  { label: 'My Donations', to: '/donations', match: ['/donations'] },
+  { label: 'Notifications', to: '/notifications', match: ['/notifications'] },
   { label: 'Volunteer', to: '/volunteer', match: ['/volunteer'] },
 ];
 

@@ -1,0 +1,184 @@
+/* ---- CharityVolunteers — volunteer opportunities & applications ---------- */
+
+.charity-volunteers {
+  padding: var(--space-6) 0 var(--space-10);
+}
+
+.charity-volunteers__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-top: var(--space-8);
+}
+
+.charity-volunteers__overline {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.charity-volunteers__title {
+  margin: 0;
+  font-size: var(--font-size-3xl, 2rem);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.charity-volunteers__subtitle {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-muted);
+}
+
+.charity-volunteers__pending-banner {
+  margin-top: var(--space-5);
+}
+
+.charity-volunteers__skeleton {
+  margin-top: var(--space-6);
+}
+
+.charity-volunteers__layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  margin-top: var(--space-6);
+}
+
+.charity-volunteers__section-head {
+  margin-bottom: var(--space-4);
+}
+
+.charity-volunteers__section-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.charity-volunteers__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.charity-volunteers__opp {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.charity-volunteers__opp-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.charity-volunteers__opp-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.charity-volunteers__opp-title {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.charity-volunteers__opp-meta {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.charity-volunteers__opp-actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.charity-volunteers__app {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.charity-volunteers__app-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.charity-volunteers__app-name {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.charity-volunteers__app-opp {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.charity-volunteers__app-statement {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  white-space: pre-wrap;
+}
+
+.charity-volunteers__app-date {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.charity-volunteers__app-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.charity-volunteers__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.charity-volunteers__form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .charity-volunteers__form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .charity-volunteers__layout {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}

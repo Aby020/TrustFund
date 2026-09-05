@@ -221,3 +221,84 @@ class TestDonationViewSet:
         results = response.data['results'] if 'results' in response.data else response.data
         assert len(results) == 1
         assert results[0]['id'] == donation1.id
+
+    def test_donation_detail_respects_ownership(self, api_client, donor_user, other_donor_user, active_campaign):
+        """A donor cannot retrieve another donor's donation (server-side ownership)."""
+        donation = Donation.objects.create(
+            donor=donor_user,
+            campaign=active_campaign,
+            amount=Decimal('100.00'),
+            status=DonationStatus.PENDING,
+        )
+        api_client.force_authenticate(user=other_donor_user)
+        response = api_client.get(f'/api/v1/donations/{donation.pk}/')
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_donation_serializer_exposes_campaign_image_and_receipt(
+        self, api_client, donor_user, active_campaign
+    ):
+        """Donation payload includes campaign_image and receipt fields when a receipt exists."""
+        donation = Donation.objects.create(
+            donor=donor_user,
+            campaign=active_campaign,
+            amount=Decimal('250.00'),
+            status=DonationStatus.SUCCESS,
+            razorpay_order_id='order_rcpt_test',
+            razorpay_payment_id='pay_rcpt_test',
+        )
+        # The receipts post_save signal auto-creates a receipt for SUCCESS.
+        assert hasattr(donation, 'receipt')
+
+        api_client.force_authenticate(user=donor_user)
+        response = api_client.get(f'/api/v1/donations/{donation.pk}/')
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data['campaign_title'] == 'Clean Water Fund'
+        # Campaign has no image set -> null, not an error.
+        assert response.data['campaign_image'] is None
+        assert response.data['receipt_id'] == donation.receipt.id
+        assert response.data['receipt_number'] == donation.receipt.receipt_number
+
+    def test_donation_list_search_by_campaign_title(self, api_client, donor_user, verified_charity):
+        """Donations are searchable by campaign title via ?search=."""
+        today = date.today()
+        campaign_water = Campaign.objects.create(
+            organization=verified_charity,
+            title='Clean Water Fund',
+            description='Providing clean water.',
+            category=CampaignCategory.COMMUNITY,
+            goal_amount=Decimal('10000.00'),
+            location='Nairobi',
+            start_date=today,
+            end_date=today + timedelta(days=30),
+            status=CampaignStatus.ACTIVE,
+        )
+        campaign_food = Campaign.objects.create(
+            organization=verified_charity,
+            title='Food for Families',
+            description='Feeding families.',
+            category=CampaignCategory.FOOD,
+            goal_amount=Decimal('5000.00'),
+            location='Mumbai',
+            start_date=today,
+            end_date=today + timedelta(days=30),
+            status=CampaignStatus.ACTIVE,
+        )
+        Donation.objects.create(
+            donor=donor_user,
+            campaign=campaign_water,
+            amount=Decimal('100.00'),
+            status=DonationStatus.SUCCESS,
+        )
+        Donation.objects.create(
+            donor=donor_user,
+            campaign=campaign_food,
+            amount=Decimal('100.00'),
+            status=DonationStatus.SUCCESS,
+        )
+
+        api_client.force_authenticate(user=donor_user)
+        response = api_client.get('/api/v1/donations/', {'search': 'water'})
+        assert response.status_code == status.HTTP_200_OK
+        results = response.data['results']
+        assert len(results) == 1
+        assert results[0]['campaign_title'] == 'Clean Water Fund'

@@ -1,0 +1,70 @@
+/* ---- CampaignDiscovery — public listing page ------------------------------ */
+
+.campaign-discovery__hero {
+  padding-top: var(--space-16);
+  padding-bottom: var(--space-8);
+}
+
+/* Filters bar */
+.campaign-discovery__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.campaign-discovery__search {
+  flex: 1;
+  min-width: 200px;
+}
+
+.campaign-discovery__filter-group {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* Results count */
+.campaign-discovery__count {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-4);
+}
+
+/* Grid */
+.campaign-discovery__grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: var(--space-6);
+}
+
+@media (min-width: 640px) {
+  .campaign-discovery__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .campaign-discovery__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Results container */
+.campaign-discovery__results {
+  min-height: 300px;
+}
+
+/* Pagination */
+.campaign-discovery__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-8) 0;
+}
+
+.campaign-discovery__page-info {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}

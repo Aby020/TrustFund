@@ -4,7 +4,7 @@ Views for Charity Organization verification workflow.
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import BasePermission, IsAuthenticated
 from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError as DRFValidationError
 from django.core.exceptions import ValidationError as DjangoValidationError
 
@@ -21,21 +21,22 @@ from charities.serializers import (
 )
 
 
-class IsAdminUser:
+class IsAdminUser(BasePermission):
     """Permission check for admin users."""
 
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.is_admin_user()
+        return request.user and request.user.is_authenticated and request.user.is_admin_user()
 
 
-class IsCharityOwner:
+class IsCharityOwner(BasePermission):
     """Permission check for charity organization owner."""
 
     def has_permission(self, request, view):
-        if not request.user.is_authenticated or not request.user.is_charity():
-            return False
-        # Check if user owns the organization (will be checked in view)
-        return True
+        return (
+            request.user
+            and request.user.is_authenticated
+            and request.user.is_charity()
+        )
 
 
 class CharityOrganizationCreateView(APIView):
@@ -53,7 +54,7 @@ class CharityOrganizationCreateView(APIView):
 
         # Check if user already has an organization
         if hasattr(request.user, 'charity_organization'):
-            raise ValidationError('A charity user can only own one organization.')
+            raise DRFValidationError('A charity user can only own one organization.')
 
         serializer = CharityOrganizationCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -116,11 +117,11 @@ class CharityOrganizationDetailView(APIView):
         ]
         for field in verification_fields:
             if field in request.data:
-                raise ValidationError(f'Field "{field}" cannot be updated directly.')
+                raise DRFValidationError(f'Field "{field}" cannot be updated directly.')
 
         # Don't allow owner change
         if 'owner' in request.data:
-            raise ValidationError('Owner cannot be changed.')
+            raise DRFValidationError('Owner cannot be changed.')
 
         serializer = CharityOrganizationSerializer(org, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -183,6 +184,7 @@ class VerificationSubmitView(APIView):
         serializer = VerificationSubmitSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        old_status = org.verification_status
         try:
             org.submit_for_verification(request.user)
         except DjangoValidationError as e:
@@ -193,8 +195,8 @@ class VerificationSubmitView(APIView):
             organization=org,
             action=VerificationAction.SUBMIT,
             performed_by=request.user,
-            from_status=VerificationStatus.PENDING,
-            to_status=VerificationStatus.PENDING,
+            from_status=old_status,
+            to_status=org.verification_status,
             reason='Submitted for verification',
         )
 

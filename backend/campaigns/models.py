@@ -98,6 +98,15 @@ class Campaign(models.Model):
         max_length=255,
         help_text=_('City/region where the campaign is based'),
     )
+
+    # Media — optional cover image uploaded to MEDIA_ROOT/campaigns/
+    image = models.ImageField(
+        _('image'),
+        upload_to='campaigns/',
+        blank=True,
+        null=True,
+        help_text=_('Cover image displayed with the campaign'),
+    )
     start_date = models.DateField(
         _('start date'),
         help_text=_('First day the campaign runs'),

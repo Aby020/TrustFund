@@ -156,7 +156,7 @@ class CampaignUpdateViewSet(viewsets.ModelViewSet):
         # If campaign_pk is in kwargs (nested URL), filter by it
         campaign_pk = self.kwargs.get('campaign_pk')
         if campaign_pk:
-            qs = qs.filter(campaign_pk=campaign_pk)
+            qs = qs.filter(campaign_id=campaign_pk)
 
         # Others can see updates for campaigns they are allowed to view (ACTIVE campaigns, or their own)
         if user.is_authenticated and user.is_charity() and hasattr(user, 'charity_organization'):

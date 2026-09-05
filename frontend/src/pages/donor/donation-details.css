@@ -1,0 +1,244 @@
+/* ---- DonationDetails — single donation detail view ------------------------- */
+
+.donation-details {
+  padding: var(--space-6) 0 var(--space-16);
+}
+
+.donation-details__breadcrumb {
+  padding: var(--space-4) 0;
+}
+
+.donation-details__back {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.donation-details__back:hover {
+  text-decoration: underline;
+}
+
+.donation-details__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) 0 var(--space-6);
+}
+
+.donation-details__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-strong);
+  margin: 0;
+}
+
+/* Layout */
+.donation-details__layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+
+.donation-details__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Campaign */
+.donation-details__campaign {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-5);
+}
+
+.donation-details__image {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.donation-details__image-placeholder {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-soft);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.donation-details__image-icon {
+  color: var(--color-primary);
+  font-size: var(--font-size-xl);
+}
+
+.donation-details__campaign-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.donation-details__campaign-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-strong);
+  margin: 0;
+}
+
+.donation-details__campaign-link {
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.donation-details__campaign-link:hover {
+  text-decoration: underline;
+}
+
+/* Amount */
+.donation-details__amount-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-5);
+}
+
+.donation-details__amount-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.donation-details__amount-value {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+/* Meta grid */
+.donation-details__meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.donation-details__meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.donation-details__meta-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-subtle);
+}
+
+.donation-details__meta-value {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+.donation-details__meta-value--mono {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  word-break: break-all;
+}
+
+/* Message */
+.donation-details__message {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.donation-details__message-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-subtle);
+  display: block;
+  margin-bottom: var(--space-1);
+}
+
+.donation-details__message-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-md);
+  margin: 0;
+}
+
+/* Sidebar card */
+.donation-details__sidebar-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.donation-details__section-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.donation-details__meta-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Receipt */
+.donation-details__receipt {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.donation-details__receipt-info {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.donation-details__no-receipt {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-subtle);
+  margin: 0;
+}
+
+/* Actions */
+.donation-details__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.donation-details__action-link {
+  text-decoration: none;
+}
+
+/* Skeleton */
+.donation-details__skeleton {
+  padding-top: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .donation-details__layout {
+    grid-template-columns: 1fr 320px;
+    align-items: start;
+  }
+}
+
+@media (min-width: 1024px) {
+  .donation-details__layout {
+    grid-template-columns: 1fr 360px;
+  }
+}

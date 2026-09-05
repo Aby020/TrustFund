@@ -1,1 +1,5 @@
+# Local tooling / workspace artifacts
 memory/
+.gstack/
+.claude/
+.verification_shots/
