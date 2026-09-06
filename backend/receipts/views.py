@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
+from rest_framework.renderers import BaseRenderer
 from rest_framework.response import Response
 
 from receipts.models import Receipt
@@ -30,6 +31,25 @@ class IsReceiptOwnerOrCharityOwnerOrAdmin(permissions.BasePermission):
         return False
 
 
+class PDFRenderer(BaseRenderer):
+    """Renderer that makes an ``Accept: application/pdf`` request negotiable.
+
+    DRF matches the request's Accept header against the endpoint's renderer
+    classes in ``initial()``, before the handler runs. Without a renderer that
+    reports ``application/pdf``, the browser's explicit ``Accept:
+    application/pdf`` is rejected with 406 and the download action never runs.
+
+    ``download_pdf`` returns a ready-to-send ``HttpResponse``, so ``render()``
+    is never actually invoked — the renderer is only required for negotiation.
+    """
+
+    media_type = 'application/pdf'
+    format = 'pdf'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        return data
+
+
 class ReceiptViewSet(viewsets.ReadOnlyModelViewSet):
     """
     ViewSet for viewing and downloading donation receipts.
@@ -52,7 +72,7 @@ class ReceiptViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Receipt.objects.none()
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['get'], renderer_classes=[PDFRenderer])
     def download_pdf(self, request, pk=None):
         """
         Download the official PDF receipt for a successful donation.
@@ -61,7 +81,7 @@ class ReceiptViewSet(viewsets.ReadOnlyModelViewSet):
         try:
             pdf_bytes = ReceiptService.generate_pdf_bytes(receipt)
             response = HttpResponse(pdf_bytes, content_type='application/pdf')
-            filename = f"Receipt_{receipt.receipt_number}.pdf"
+            filename = f"TrustFund-Receipt-{receipt.receipt_number}.pdf"
             response['Content-Disposition'] = f'attachment; filename="{filename}"'
             return response
         except Exception as e:

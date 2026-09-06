@@ -174,3 +174,75 @@ class TestReceiptViewSet:
         assert response.status_code == status.HTTP_200_OK
         assert response['Content-Type'] == 'application/pdf'
         assert b'%PDF' in response.content
+        # Attachment filename carries the TrustFund-branded receipt number.
+        assert f'TrustFund-Receipt-{receipt.receipt_number}.pdf' in response['Content-Disposition']
+
+    def test_pdf_download_accepts_browser_render_type(self, api_client, donor_user, active_campaign):
+        """The frontend requests the PDF with ``Accept: application/pdf``.
+
+        Regression: DRF negotiates the renderer from the Accept header before
+        the action runs, and with only JSONRenderer configured that header was
+        rejected with 406, so the browser download always failed even though
+        the default-``Accept`` APIClient tests passed.
+        """
+        donation = Donation.objects.create(
+            donor=donor_user,
+            campaign=active_campaign,
+            amount=Decimal('260.00'),
+            status=DonationStatus.SUCCESS,
+            razorpay_order_id='ord_pdf_accept_1',
+            razorpay_payment_id='pay_pdf_accept_1',
+        )
+        receipt = Receipt.objects.get(donation=donation)
+
+        api_client.force_authenticate(user=donor_user)
+        response = api_client.get(
+            f'/api/v1/receipts/{receipt.pk}/download_pdf/',
+            HTTP_ACCEPT='application/pdf',
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response['Content-Type'] == 'application/pdf'
+        assert b'%PDF' in response.content
+        assert f'TrustFund-Receipt-{receipt.receipt_number}.pdf' in response['Content-Disposition']
+
+    def test_pdf_download_requires_authentication(self, api_client, active_campaign):
+        donor = User.objects.create_user(
+            email='anon_receipt@example.com',
+            password='SecurePassword123!',
+            role=Role.DONOR,
+        )
+        donation = Donation.objects.create(
+            donor=donor,
+            campaign=active_campaign,
+            amount=Decimal('75.00'),
+            status=DonationStatus.SUCCESS,
+            razorpay_order_id='ord_unauth_1',
+        )
+        receipt = Receipt.objects.get(donation=donation)
+
+        # No credentials -> rejected before any PDF is generated.
+        response = api_client.get(f'/api/v1/receipts/{receipt.pk}/download_pdf/')
+        assert response.status_code in [
+            status.HTTP_401_UNAUTHORIZED,
+            status.HTTP_403_FORBIDDEN,
+        ]
+        assert b'%PDF' not in response.content
+
+    def test_pdf_download_prevents_other_donor(self, api_client, donor_user, other_donor_user, active_campaign):
+        donation = Donation.objects.create(
+            donor=donor_user,
+            campaign=active_campaign,
+            amount=Decimal('120.00'),
+            status=DonationStatus.SUCCESS,
+            razorpay_order_id='ord_other_1',
+        )
+        receipt = Receipt.objects.get(donation=donation)
+
+        # A different (authenticated) donor must not be able to download it.
+        api_client.force_authenticate(user=other_donor_user)
+        response = api_client.get(f'/api/v1/receipts/{receipt.pk}/download_pdf/')
+        assert response.status_code in [
+            status.HTTP_403_FORBIDDEN,
+            status.HTTP_404_NOT_FOUND,
+        ]
+        assert b'%PDF' not in response.content

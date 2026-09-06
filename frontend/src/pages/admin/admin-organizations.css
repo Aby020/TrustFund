@@ -1,0 +1,7 @@
+/* ---- AdminOrganizations -------------------------------------------------- */
+
+.admin-organizations__name {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  white-space: nowrap;
+}

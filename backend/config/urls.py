@@ -19,7 +19,10 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
+from config.health import health_check
+
 urlpatterns = [
+    path('healthz/', health_check, name='health-check'),
     path('admin/', admin.site.urls),
     path('api/v1/auth/', include('users.urls')),
     path('api/v1/charities/', include('charities.urls')),
@@ -29,6 +32,7 @@ urlpatterns = [
     path('api/v1/volunteers/', include('volunteers.urls')),
     path('api/v1/notifications/', include('notifications.urls')),
     path('api/v1/dashboard/', include('dashboard.urls')),
+    path('api/v1/admin/', include('admin_api.urls')),
 ]
 
 # Serve user-uploaded media in development only (production uses a CDN/static host).

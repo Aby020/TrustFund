@@ -1,0 +1,3 @@
+# Force LF for shell scripts so Unix shebangs (build.sh on Render) never pick
+# up a CRLF. Everything else follows the repository's normal autocrlf handling.
+*.sh text eol=lf

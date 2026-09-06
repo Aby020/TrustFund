@@ -12,6 +12,12 @@ import DonatePage from './donate';
 
 const mockGetCampaign = vi.fn();
 const mockInitiateDonation = vi.fn();
+const mockLoadRazorpaySdk = vi.fn();
+
+// The SDK loader is replaced so tests never inject a real <script>.
+vi.mock('@/services/razorpay', () => ({
+  loadRazorpaySdk: (...args: unknown[]) => mockLoadRazorpaySdk(...args),
+}));
 
 vi.mock('@/services/campaigns', () => ({
   listCampaigns: vi.fn(),
@@ -76,6 +82,7 @@ describe('DonatePage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetCampaign.mockResolvedValue(SAMPLE_CAMPAIGN);
+    mockLoadRazorpaySdk.mockResolvedValue(undefined);
   });
 
   it('renders the donation form heading', async () => {
@@ -191,5 +198,87 @@ describe('DonatePage', () => {
       const alert = screen.getByRole('alert');
       expect(alert).toBeInTheDocument();
     });
+  });
+
+  /* --- Razorpay Checkout ------------------------------------------------ */
+
+  const successResponse = {
+    id: 1,
+    razorpay_order_id: 'order_OzTest12345',
+    amount: '250',
+    currency: 'INR',
+    status: 'PENDING',
+  };
+
+  it('creates the order, loads the SDK, then opens checkout', async () => {
+    const user = userEvent.setup();
+    const openMock = vi.fn();
+    const RazorpayCtor = vi.fn().mockImplementation(() => ({ open: openMock, close: vi.fn() }));
+    window.Razorpay = RazorpayCtor as unknown as typeof window.Razorpay;
+
+    mockInitiateDonation.mockResolvedValueOnce(successResponse);
+
+    renderDonate();
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /donate/i })).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('button', { name: /^₹100$/ }));
+    await user.click(screen.getByRole('button', { name: /donate/i }));
+
+    // Order created before the SDK is referenced, and the loader is awaited.
+    await waitFor(() => {
+      expect(mockInitiateDonation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          campaign: 1,
+          amount: 100,
+          currency: 'INR',
+          idempotency_key: expect.any(String),
+        }),
+      );
+      expect(mockLoadRazorpaySdk).toHaveBeenCalled();
+      expect(RazorpayCtor).toHaveBeenCalledWith(
+        expect.objectContaining({
+          amount: 10000, // paise
+          currency: 'INR',
+          order_id: 'order_OzTest12345',
+          name: 'TrustFund',
+        }),
+      );
+      expect(openMock).toHaveBeenCalledTimes(1);
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    delete (window as any).Razorpay;
+  });
+
+  it('shows a graceful error when the SDK cannot be loaded', async () => {
+    const user = userEvent.setup();
+    const RazorpayCtor = vi.fn();
+    window.Razorpay = RazorpayCtor as unknown as typeof window.Razorpay;
+
+    mockInitiateDonation.mockResolvedValueOnce(successResponse);
+    // Persistent rejection: the mount preload also calls the loader, and its
+    // failure must not mask the submit-path failure this test exercises.
+    mockLoadRazorpaySdk.mockRejectedValue(new Error('Razorpay Checkout SDK failed to load.'));
+
+    renderDonate();
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /donate/i })).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('button', { name: /^₹100$/ }));
+    await user.click(screen.getByRole('button', { name: /donate/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/payment gateway is temporarily unavailable/i)).toBeInTheDocument();
+    });
+    // Checkout is never constructed when the SDK is unavailable.
+    expect(RazorpayCtor).not.toHaveBeenCalled();
+    // Donate button is re-enabled so the user can retry.
+    expect(screen.getByRole('button', { name: /donate/i })).toBeEnabled();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    delete (window as any).Razorpay;
   });
 });

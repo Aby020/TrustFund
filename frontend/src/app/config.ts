@@ -42,10 +42,16 @@ export const ACCOUNT_NAV: AppNavItem[] = [
   { label: 'Dashboard', to: AUTH_ROUTES.dashboard, match: ['/dashboard'] },
   { label: 'My Donations', to: '/donations', match: ['/donations'] },
   { label: 'Notifications', to: '/notifications', match: ['/notifications'] },
-  { label: 'Volunteer', to: '/volunteer', match: ['/volunteer'] },
+  { label: 'Volunteer', to: '/volunteer/manage', match: ['/volunteer/manage'] },
 ];
 
-/** Footer link groups (placeholders until the pages land in later tasks). */
+/**
+ * Footer link groups. Only links that resolve to real, functional pages are
+ * listed — a public visitor clicking a footer link must never hit a 404 or a
+ * dead placeholder. (Volunteer/About/Impact and Transparency/Privacy/Terms
+ * pages do not exist yet, so those links are intentionally omitted until the
+ * functionality ships.)
+ */
 export interface FooterNavGroup {
   heading: string;
   links: { label: string; to: string }[];
@@ -58,22 +64,6 @@ export const FOOTER_NAV_GROUPS: FooterNavGroup[] = [
       { label: 'Discover campaigns', to: '/campaigns' },
       { label: 'Charities', to: '/charities' },
       { label: 'How it works', to: '/how-it-works' },
-    ],
-  },
-  {
-    heading: 'Get involved',
-    links: [
-      { label: 'Volunteer', to: '/volunteer' },
-      { label: 'About us', to: '/about' },
-      { label: 'Our impact', to: '/impact' },
-    ],
-  },
-  {
-    heading: 'Trust & safety',
-    links: [
-      { label: 'Transparency', to: '/transparency' },
-      { label: 'Privacy', to: '/privacy' },
-      { label: 'Terms', to: '/terms' },
     ],
   },
 ];

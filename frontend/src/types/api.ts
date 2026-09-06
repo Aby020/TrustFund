@@ -359,8 +359,114 @@ export interface VolunteerApplication {
 }
 
 /* -------------------------------------------------------------------------- */
+/*  Admin types — mirrors backend dashboard + admin_api apps                  */
+/* -------------------------------------------------------------------------- */
+
+/** GET /api/v1/dashboard/admin/ — system-wide admin metrics. */
+export interface AdminDashboard {
+  total_users: number;
+  total_charities: number;
+  verified_charities: number;
+  total_campaigns: number;
+  active_campaigns: number;
+  /** Sum of SUCCESS donations, as a decimal string. */
+  total_raised: string;
+}
+
+/** GET /api/v1/dashboard/analytics/ — platform donation analytics. */
+export interface AdminAnalytics {
+  donations_by_category: {
+    category: CampaignCategory;
+    total_amount: string;
+    donation_count: number;
+  }[];
+  total_campaigns: number;
+  successful_campaigns: number;
+  success_rate_percentage: number;
+}
+
+/** Admin-visible platform user (admin_api AdminUserSerializer). */
+export interface AdminUser {
+  id: number;
+  email: string;
+  first_name: string;
+  last_name: string;
+  full_name: string;
+  role: UserRole;
+  role_display: string;
+  is_active: boolean;
+  date_joined: string;
+}
+
+/** One verification state change (charities VerificationHistorySerializer). */
+export interface VerificationHistoryEntry {
+  id: number;
+  action: 'SUBMIT' | 'APPROVE' | 'REJECT' | 'RESUBMIT';
+  action_display: string;
+  performed_by: number | null;
+  performed_by_name: string | null;
+  from_status: VerificationStatus;
+  to_status: VerificationStatus;
+  reason: string;
+  created_at: string;
+}
+
+/** Platform audit entry (admin_api AuditLogSerializer). */
+export interface AuditLog {
+  id: number;
+  actor: number | null;
+  actor_name: string | null;
+  action: string;
+  action_display: string;
+  resource_type: string;
+  resource_label: string;
+  detail: string;
+  created_at: string;
+}
+
+/* -------------------------------------------------------------------------- */
 /*  Display helpers                                                           */
 /* -------------------------------------------------------------------------- */
+
+/** Human-readable labels for user roles. */
+export const ROLE_LABELS: Record<UserRole, string> = {
+  DONOR: 'Donor',
+  CHARITY: 'Charity',
+  VOLUNTEER: 'Volunteer',
+  ADMIN: 'Admin',
+};
+
+/** Tone mapping for user role badges. */
+export const ROLE_TONES: Record<UserRole, 'info' | 'success' | 'warning' | 'danger' | 'neutral'> = {
+  DONOR: 'info',
+  CHARITY: 'success',
+  VOLUNTEER: 'warning',
+  ADMIN: 'danger',
+};
+
+/** Human-readable labels for audit log actions. */
+export const AUDIT_ACTION_LABELS: Record<string, string> = {
+  VERIFICATION_SUBMIT: 'Submitted',
+  VERIFICATION_APPROVE: 'Approved',
+  VERIFICATION_REJECT: 'Rejected',
+  VERIFICATION_RESUBMIT: 'Resubmitted',
+  CAMPAIGN_CREATED: 'Campaign created',
+  CAMPAIGN_UPDATED: 'Campaign updated',
+  CAMPAIGN_CANCELLED: 'Campaign cancelled',
+  CAMPAIGN_DELETED: 'Campaign deleted',
+};
+
+/** Tone mapping for audit log action badges. */
+export const AUDIT_ACTION_TONES: Record<string, 'info' | 'success' | 'warning' | 'danger' | 'neutral'> = {
+  VERIFICATION_SUBMIT: 'info',
+  VERIFICATION_APPROVE: 'success',
+  VERIFICATION_REJECT: 'danger',
+  VERIFICATION_RESUBMIT: 'info',
+  CAMPAIGN_CREATED: 'success',
+  CAMPAIGN_UPDATED: 'neutral',
+  CAMPAIGN_CANCELLED: 'warning',
+  CAMPAIGN_DELETED: 'danger',
+};
 
 /** Human-readable labels for campaign statuses. */
 export const CAMPAIGN_STATUS_LABELS: Record<CampaignStatus, string> = {
@@ -397,6 +503,14 @@ export const DONATION_STATUS_LABELS: Record<DonationStatus, string> = {
   REFUNDED: 'Refunded',
 };
 
+/** Tone mapping for donation status badges. */
+export const DONATION_STATUS_TONES: Record<DonationStatus, string> = {
+  PENDING: 'info',
+  SUCCESS: 'success',
+  FAILED: 'danger',
+  REFUNDED: 'neutral',
+};
+
 /** Tone mapping for campaign status badges. */
 export const CAMPAIGN_STATUS_TONES: Record<CampaignStatus, string> = {
   DRAFT: 'info',
@@ -404,6 +518,13 @@ export const CAMPAIGN_STATUS_TONES: Record<CampaignStatus, string> = {
   COMPLETED: 'success',
   EXPIRED: 'warning',
   CANCELLED: 'danger',
+};
+
+/** Human-readable labels for verification statuses. */
+export const VERIFICATION_STATUS_LABELS: Record<VerificationStatus, string> = {
+  PENDING: 'Pending',
+  VERIFIED: 'Verified',
+  REJECTED: 'Rejected',
 };
 
 /** Tone mapping for verification status badges. */

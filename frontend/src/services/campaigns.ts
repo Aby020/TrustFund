@@ -38,7 +38,7 @@ export function listCampaignUpdates(campaignId: number) {
 /* ---------------------------- Write operations ---------------------------- */
 
 /**
- * Create a new campaign (starts in DRAFT status).
+ * Create a new campaign. Verified charities' campaigns start ACTIVE (live).
  * Accepts FormData (multipart) for image uploads or a plain object (JSON).
  */
 export function createCampaign(data: FormData) {

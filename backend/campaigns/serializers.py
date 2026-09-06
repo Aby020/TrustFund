@@ -61,8 +61,9 @@ class CampaignWriteSerializer(serializers.ModelSerializer):
     """
     Base write serializer for campaigns.
 
-    - status is not accepted on create (new campaigns start as DRAFT); a
-      subclass adds it for updates.
+    - status is read-only on every write path. On create the view assigns
+      ACTIVE for verified organizations (never a client-supplied value); a
+      subclass adds status for updates via validated transitions.
     - organization/raised_amount are read-only; the view assigns the caller's
       verified charity organization and the donations domain mutates the
       raised amount.
@@ -119,10 +120,26 @@ class CampaignWriteSerializer(serializers.ModelSerializer):
                 )
         return value
 
+    ALLOWED_IMAGE_MIME_TYPES = ('image/jpeg', 'image/png', 'image/gif', 'image/webp')
+
     def validate_image(self, value):
-        """Enforce the 5 MB upload limit (matches the frontend constraint)."""
-        if value is not None and value.size > 5 * 1024 * 1024:
+        """
+        Enforce the 5 MB upload limit and a safe image-format whitelist.
+
+        The MIME type is client-declared and is not a security boundary on its
+        own — Django's ImageField re-verifies the decoded image with Pillow on
+        save — but rejecting unknown types here keeps arbitrary/surprise file
+        content out of the media store and matches the public image formats the
+        frontend advertises.
+        """
+        if value is None:
+            return value
+        if value.size > 5 * 1024 * 1024:
             raise serializers.ValidationError('Image must be 5 MB or smaller.')
+        if value.content_type not in self.ALLOWED_IMAGE_MIME_TYPES:
+            raise serializers.ValidationError(
+                'Image must be a JPEG, PNG, GIF, or WebP file.'
+            )
         return value
 
     def validate(self, attrs):
@@ -141,7 +158,7 @@ class CampaignWriteSerializer(serializers.ModelSerializer):
 
 
 class CampaignCreateSerializer(CampaignWriteSerializer):
-    """Write serializer for creating a campaign (status lock to DRAFT)."""
+    """Write serializer for creating a campaign (status is view-assigned)."""
 
 
 class CampaignUpdateSerializer(CampaignWriteSerializer):

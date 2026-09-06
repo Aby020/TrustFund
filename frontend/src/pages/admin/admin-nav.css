@@ -1,0 +1,88 @@
+/* ---- AdminNav — administration sidebar / rail ----------------------------- */
+
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.admin-nav__overline {
+  margin: 0;
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+
+.admin-nav__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-nav__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--duration-fast) var(--ease-out-cubic),
+    background-color var(--duration-fast) var(--ease-out-cubic);
+}
+
+.admin-nav__link:hover {
+  color: var(--color-text);
+  background-color: var(--color-surface-muted);
+}
+
+.admin-nav__link:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+.admin-nav__link.is-active {
+  color: var(--color-primary);
+  background-color: var(--color-primary-soft);
+}
+
+.admin-nav__label {
+  line-height: var(--line-height-sm);
+}
+
+/* On small screens the sidebar folds into a horizontal, scrollable rail so
+   every destination stays reachable without an extra tap for a menu. */
+@media (max-width: 1023.98px) {
+  .admin-nav {
+    gap: var(--space-2);
+  }
+
+  .admin-nav__overline {
+    padding-inline: var(--space-4);
+  }
+
+  .admin-nav__list {
+    flex-direction: row;
+    gap: var(--space-1);
+    overflow-x: auto;
+    padding-bottom: var(--space-1);
+    scroll-padding-inline: var(--space-4);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-nav__item {
+    flex: 0 0 auto;
+  }
+
+  .admin-nav__link {
+    padding: var(--space-2) var(--space-3);
+  }
+}

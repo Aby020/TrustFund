@@ -11,3 +11,16 @@ class IsDonor(permissions.BasePermission):
     """
     def has_permission(self, request, view):
         return request.user and request.user.is_authenticated and request.user.role == Role.DONOR
+
+
+class IsAdmin(permissions.BasePermission):
+    """
+    Allows access only to authenticated ADMIN-role (or superuser) users.
+    Denies donors, charities, and volunteers at the API boundary.
+    """
+    def has_permission(self, request, view):
+        return (
+            request.user
+            and request.user.is_authenticated
+            and request.user.is_admin_user()
+        )

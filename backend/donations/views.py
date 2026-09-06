@@ -2,6 +2,8 @@
 Views for Donation management and Razorpay payment integration.
 """
 import json
+import logging
+
 from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -17,6 +19,8 @@ from donations.serializers import (
     DonationVerifySerializer,
 )
 from donations.services import DonationService
+
+logger = logging.getLogger(__name__)
 
 
 class DonationViewSet(viewsets.ModelViewSet):
@@ -131,6 +135,10 @@ class DonationViewSet(viewsets.ModelViewSet):
                 return Response({'status': 'success'}, status=status.HTTP_200_OK)
             return Response({'status': 'ignored'}, status=status.HTTP_200_OK)
         except DjangoValidationError as e:
+            # Invalid webhook signature (@signature forged or misconfigured secret).
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception:
+            # Log the full traceback internally but never echo exception internals
+            # back to the caller (a forged webhook must not probe internals).
+            logger.exception('Unhandled error while processing Razorpay webhook.')
+            return Response({'error': 'Internal server error.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

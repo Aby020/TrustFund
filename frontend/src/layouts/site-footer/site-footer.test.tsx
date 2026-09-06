@@ -10,19 +10,25 @@ describe('SiteFooter', () => {
     expect(screen.getByText(/every rupee is tracked from donation to impact/i)).toBeInTheDocument();
   });
 
-  it('renders the navigation groups and their links', () => {
+  it('renders the navigation group with only real destinations', () => {
     renderWithProviders(<SiteFooter />);
 
     const groups = screen.getAllByRole('navigation', { name: 'Footer' });
     expect(groups).toHaveLength(1);
 
     expect(screen.getByRole('heading', { name: 'Explore' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Get involved' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Trust & safety' })).toBeInTheDocument();
 
-    expect(screen.getByRole('link', { name: 'Discover campaigns' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Volunteer' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Privacy' })).toBeInTheDocument();
+    // Every footer link must point to a real, functional public route.
+    expect(screen.getByRole('link', { name: 'Discover campaigns' })).toHaveAttribute('href', '/campaigns');
+    expect(screen.getByRole('link', { name: 'Charities' })).toHaveAttribute('href', '/charities');
+    expect(screen.getByRole('link', { name: 'How it works' })).toHaveAttribute('href', '/how-it-works');
+
+    // Placeholders with no route/pages yet must not be presented as links.
+    expect(screen.queryByRole('heading', { name: 'Get involved' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Trust & safety' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Volunteer' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Privacy' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Terms' })).not.toBeInTheDocument();
   });
 
   it('shows the current year in the copyright bar', () => {

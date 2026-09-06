@@ -3,3 +3,12 @@ memory/
 .gstack/
 .claude/
 .verification_shots/
+
+# Knowledge-graph tooling output (regenerated locally, never committed)
+graphify-out/
+
+# Environment files — never commit secrets. `.env.example` blueprints ARE
+# committed (explicitly re-included).
+.env
+.env.*
+!.env.example

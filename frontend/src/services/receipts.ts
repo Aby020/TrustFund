@@ -1,6 +1,7 @@
 /**
  * receipts — service layer for receipt listing and PDF download.
- * Uses the shared http client.
+ * Uses the shared http client for JSON; the binary PDF is fetched directly
+ * (the shared client only parses JSON) while reusing the same token source.
  */
 import { http, API_BASE_URL } from './http';
 import { getAccessToken } from './token-store';
@@ -27,19 +28,31 @@ export async function downloadReceiptPdf(receiptId: number): Promise<Blob> {
     new URL(`/api/v1/receipts/${receiptId}/download_pdf/`, API_BASE_URL).toString(),
     { headers },
   );
-  if (!response.ok) throw new Error('Failed to download receipt');
+  if (!response.ok) {
+    throw new Error(`Failed to download receipt (HTTP ${response.status}).`);
+  }
   return response.blob();
 }
 
 /** Download a receipt PDF to the browser (creates + revokes an object URL). */
-export async function downloadReceipt(receiptId: number): Promise<void> {
+export async function downloadReceipt(
+  receiptId: number,
+  receiptNumber?: string | null,
+): Promise<void> {
   const blob = await downloadReceiptPdf(receiptId);
+  const filename = receiptNumber
+    ? `TrustFund-Receipt-${receiptNumber}.pdf`
+    : `Receipt_${receiptId}.pdf`;
+
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
   anchor.href = url;
-  anchor.download = `Receipt_${receiptId}.pdf`;
+  anchor.download = filename;
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
-  URL.revokeObjectURL(url);
+
+  // Defer revoking the object URL so the browser has time to begin reading
+  // the blob. Revoking synchronously can silently cancel the download.
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

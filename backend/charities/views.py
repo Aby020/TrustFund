@@ -10,6 +10,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 
 from users.models import Role
 from charities.models import CharityOrganization, VerificationStatus, VerificationAction, VerificationLog
+from admin_api.models import AuditAction, record_audit
 from charities.serializers import (
     CharityOrganizationSerializer,
     CharityOrganizationCreateSerializer,
@@ -199,6 +200,13 @@ class VerificationSubmitView(APIView):
             to_status=org.verification_status,
             reason='Submitted for verification',
         )
+        record_audit(
+            actor=request.user,
+            action=AuditAction.VERIFICATION_SUBMIT,
+            resource_type='CharityOrganization',
+            resource_label=org.name,
+            detail='Submitted for verification',
+        )
 
         response_serializer = CharityOrganizationSerializer(org)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
@@ -243,6 +251,13 @@ class VerificationApproveView(APIView):
             from_status=old_status,
             to_status=VerificationStatus.VERIFIED,
             reason='Verification approved',
+        )
+        record_audit(
+            actor=request.user,
+            action=AuditAction.VERIFICATION_APPROVE,
+            resource_type='CharityOrganization',
+            resource_label=org.name,
+            detail='Verification approved by admin',
         )
 
         response_serializer = CharityOrganizationSerializer(org)
@@ -291,6 +306,13 @@ class VerificationRejectView(APIView):
             to_status=VerificationStatus.REJECTED,
             reason=reason,
         )
+        record_audit(
+            actor=request.user,
+            action=AuditAction.VERIFICATION_REJECT,
+            resource_type='CharityOrganization',
+            resource_label=org.name,
+            detail=reason,
+        )
 
         response_serializer = CharityOrganizationSerializer(org)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
@@ -332,6 +354,13 @@ class VerificationResubmitView(APIView):
             from_status=old_status,
             to_status=VerificationStatus.PENDING,
             reason='Resubmitted after rejection',
+        )
+        record_audit(
+            actor=request.user,
+            action=AuditAction.VERIFICATION_RESUBMIT,
+            resource_type='CharityOrganization',
+            resource_label=org.name,
+            detail='Resubmitted after rejection',
         )
 
         response_serializer = CharityOrganizationSerializer(org)

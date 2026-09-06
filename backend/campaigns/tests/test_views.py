@@ -101,7 +101,7 @@ class TestCampaignViewSet:
         response = api_client.post(url, payload, format='json')
         assert response.status_code == status.HTTP_201_CREATED
         assert response.data['title'] == 'New Health Clinic'
-        assert response.data['status'] == CampaignStatus.DRAFT
+        assert response.data['status'] == CampaignStatus.ACTIVE
         assert response.data['raised_amount'] == '0.00'
 
     def test_create_campaign_unverified_charity_forbidden(self, api_client, unverified_charity_user):

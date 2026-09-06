@@ -84,7 +84,7 @@ class TestCampaignImageUpload:
         response = api_client.post('/api/v1/campaigns/', payload, format='multipart')
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert response.data['status'] == CampaignStatus.DRAFT
+        assert response.data['status'] == CampaignStatus.ACTIVE
         assert response.data['image'] is not None
         assert response.data['image'].startswith('http')
 
@@ -119,6 +119,50 @@ class TestCampaignImageUpload:
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert 'image' in response.data
+
+    def test_serializer_whitelist_rejects_non_image_mime(self):
+        """
+        The write serializer's MIME whitelist rejects an explicitly non-image
+        content_type regardless of the bytes inside (unit-level, independent of
+        the test client's multipart encoding, which would otherwise guess from
+        the filename).
+        """
+        from rest_framework import serializers as drf_serializers
+
+        octet = SimpleUploadedFile(
+            'photo.bin', _make_image(name='photo.bin').read(), content_type='application/octet-stream'
+        )
+        from campaigns.serializers import CampaignWriteSerializer
+        with pytest.raises(drf_serializers.ValidationError) as excinfo:
+            CampaignWriteSerializer().validate_image(octet)
+        assert 'JPEG, PNG, GIF' in str(excinfo.value)
+
+    def test_create_campaign_accepts_webp(self, api_client, verified_charity_user):
+        """WebP is in the whitelist and is accepted alongside JPEG/PNG/GIF."""
+        api_client.force_authenticate(user=verified_charity_user)
+        payload = _campaign_payload({'image': _make_image(name='photo.webp', fmt='WEBP',
+                                                          content_type='image/webp')})
+        response = api_client.post('/api/v1/campaigns/', payload, format='multipart')
+
+        assert response.status_code == status.HTTP_201_CREATED, response.data
+        assert response.data['image'] is not None
+
+    def test_create_campaign_sanitizes_upload_filename(self, api_client, verified_charity_user):
+        """The stored image name is a UUID; the client filename never reaches storage."""
+        api_client.force_authenticate(user=verified_charity_user)
+        evil_name = '../../evil.png'
+        payload = _campaign_payload({
+            'title': 'Traversal Name Edge Case',
+            'image': _make_image(name=evil_name),
+        })
+        response = api_client.post('/api/v1/campaigns/', payload, format='multipart')
+
+        assert response.status_code == status.HTTP_201_CREATED, response.data
+        campaign = Campaign.objects.get(title='Traversal Name Edge Case')
+        assert campaign.image.name.startswith('campaigns/')
+        assert campaign.image.name.endswith('.png')
+        assert 'evil' not in campaign.image.name
+        assert '/../' not in campaign.image.name
 
     def _make_campaign(self, user, **kwargs):
         """Create a campaign directly via the ORM (create API omits `id`)."""

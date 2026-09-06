@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { Spinner } from '@/components';
 import { AuthLayout } from '@/layouts/auth-layout/auth-layout';
 import { ProtectedRoute, RequireRole } from '@/components';
+import { AdminLayout } from '@/pages/admin';
 
 /**
  * Central route table. Pages are code-split by default — add pages here,
@@ -18,6 +19,8 @@ function lazyPage(loader: PageLoader): LazyExoticComponent<ComponentType> {
 
 /* ---- Public pages ---- */
 const HomePage = lazyPage(() => import('@/pages/home/home'));
+const CharitiesPage = lazyPage(() => import('@/pages/charities/charities'));
+const HowItWorksPage = lazyPage(() => import('@/pages/how-it-works/how-it-works'));
 const NotFoundPage = lazyPage(() => import('@/pages/not-found/not-found'));
 
 /* ---- Auth pages (inside AuthLayout) ---- */
@@ -55,6 +58,17 @@ const VolunteerApplicationsPage = lazyPage(() => import('@/pages/volunteer/volun
 const VolunteerApplicationDetailPage = lazyPage(() => import('@/pages/volunteer/volunteer-application-detail'));
 const VolunteerNotificationsPage = lazyPage(() => import('@/pages/volunteer/volunteer-notifications'));
 
+/* ---- Admin pages (role-gated, wrapped in AdminLayout) ---- */
+const AdminDashboardPage = lazyPage(() => import('@/pages/admin/admin-dashboard'));
+const AdminVerificationsListPage = lazyPage(() => import('@/pages/admin/admin-verifications-list'));
+const AdminVerificationDetailPage = lazyPage(() => import('@/pages/admin/admin-verification-detail'));
+const AdminUsersPage = lazyPage(() => import('@/pages/admin/admin-users'));
+const AdminOrganizationsPage = lazyPage(() => import('@/pages/admin/admin-organizations'));
+const AdminCampaignsPage = lazyPage(() => import('@/pages/admin/admin-campaigns'));
+const AdminDonationsPage = lazyPage(() => import('@/pages/admin/admin-donations'));
+const AdminAuditLogsPage = lazyPage(() => import('@/pages/admin/admin-audit-logs'));
+const AdminNotificationsPage = lazyPage(() => import('@/pages/admin/admin-notifications'));
+
 /** Shared fallback shown while a lazily-loaded page mounts. */
 export function PageFallback() {
   return (
@@ -70,6 +84,8 @@ export function AppRoutes() {
       <Routes>
         {/* ---- Public routes ---- */}
         <Route path="/" element={<HomePage />} />
+        <Route path="/charities" element={<CharitiesPage />} />
+        <Route path="/how-it-works" element={<HowItWorksPage />} />
 
         {/* ---- Campaign routes (public) ---- */}
         <Route path="/campaigns" element={<CampaignDiscoveryPage />} />
@@ -98,7 +114,17 @@ export function AppRoutes() {
             <Route path="/notifications" element={<NotificationsPage />} />
           </Route>
           <Route element={<RequireRole roles={['ADMIN']} />}>
-            {/* <Route path="/admin" element={<AdminPage />} /> */}
+            <Route element={<AdminLayout />}>
+              <Route path="/admin/manage" element={<AdminDashboardPage />} />
+              <Route path="/admin/manage/verifications" element={<AdminVerificationsListPage />} />
+              <Route path="/admin/manage/verifications/:id" element={<AdminVerificationDetailPage />} />
+              <Route path="/admin/manage/users" element={<AdminUsersPage />} />
+              <Route path="/admin/manage/organizations" element={<AdminOrganizationsPage />} />
+              <Route path="/admin/manage/campaigns" element={<AdminCampaignsPage />} />
+              <Route path="/admin/manage/donations" element={<AdminDonationsPage />} />
+              <Route path="/admin/manage/audit-logs" element={<AdminAuditLogsPage />} />
+              <Route path="/admin/manage/notifications" element={<AdminNotificationsPage />} />
+            </Route>
           </Route>
           <Route element={<RequireRole roles={['CHARITY', 'ADMIN']} />}>
             <Route path="/charity/manage" element={<CharityDashboardPage />} />

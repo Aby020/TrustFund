@@ -1,0 +1,119 @@
+/* ---- CharityCard — verified org in the public directory ------------------- */
+
+.charity-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  height: 100%;
+  padding: var(--space-5);
+}
+
+.charity-card__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.charity-card__avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.charity-card__titles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.charity-card__name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-strong);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: var(--line-height-sm);
+  margin: 0;
+}
+
+.charity-card__location {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.charity-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.charity-card__count {
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-muted);
+}
+
+.charity-card__categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.charity-card__campaigns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  margin-top: auto;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.charity-card__campaign-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--color-text);
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.charity-card__campaign-link:hover,
+.charity-card__campaign-link:focus-visible {
+  background: var(--color-surface-muted);
+  color: var(--color-primary);
+}
+
+.charity-card__campaign-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.charity-card__campaign-arrow {
+  flex-shrink: 0;
+  color: var(--color-text-subtle);
+}
+
+/* Skeleton variants used by the loading grid */
+.charity-card--skeleton .charity-card__avatar-skeleton {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}

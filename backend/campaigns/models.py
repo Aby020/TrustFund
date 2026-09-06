@@ -5,10 +5,31 @@ A campaign is a fundraising effort owned by a verified CharityOrganization.
 The raised amount is controlled by the donations domain (not implemented yet)
 and must never be writable through the regular campaign APIs.
 """
+import uuid
+from pathlib import Path
+
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
+
+ALLOWED_CAMPAIGN_IMAGE_EXTS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+
+
+def campaign_image_upload_to(instance, filename):
+    """
+    Store campaign images under a random UUID name.
+
+    A client-supplied filename never reaches the storage path — it can carry
+    path separators, dotfile segments, or misleading extensions. Only the
+    lowercased extension is carried over, and only from a small safe whitelist,
+    so the stored path is always ``campaigns/<uuid>.<safe_ext>`` with no
+    user-controlled string. The file *content* is independently verified by
+    Django's ImageField/Pillow on save.
+    """
+    suffix = Path(filename).suffix.lower()
+    name = f'{uuid.uuid4().hex}{suffix}' if suffix in ALLOWED_CAMPAIGN_IMAGE_EXTS else uuid.uuid4().hex
+    return f'campaigns/{name}'
 
 
 class CampaignCategory(models.TextChoices):
@@ -102,7 +123,7 @@ class Campaign(models.Model):
     # Media — optional cover image uploaded to MEDIA_ROOT/campaigns/
     image = models.ImageField(
         _('image'),
-        upload_to='campaigns/',
+        upload_to=campaign_image_upload_to,
         blank=True,
         null=True,
         help_text=_('Cover image displayed with the campaign'),

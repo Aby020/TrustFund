@@ -1,12 +1,32 @@
 """
 Signals for the notifications app (or handling event triggers).
 """
+import logging
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from campaigns.models import CampaignUpdate
 from notifications.tasks import send_notification_task
 from donations.models import Donation
 from volunteers.models import VolunteerApplication
+
+logger = logging.getLogger(__name__)
+
+
+def _enqueue_notification(task, **kwargs):
+    """
+    Deliver a notification task without letting a delivery failure escape.
+
+    With ``CELERY_TASK_ALWAYS_EAGER=True`` (the production setting — there is no
+    broker) ``.delay()`` runs synchronously inside the caller's transaction. If a
+    notification task raised there, it would roll back the surrounding commit —
+    e.g. a donation marked SUCCESS, or a campaign update. Notifications are
+    best-effort: a broker or DB hiccup must never undo a payment.
+    """
+    try:
+        task.delay(**kwargs)
+    except Exception as exc:  # pragma: no cover - defensive; see docstring
+        logger.error(f'Notification delivery failed (task at risk of rollback): {exc}')
 
 
 @receiver(post_save, sender=CampaignUpdate)
@@ -26,7 +46,8 @@ def handle_campaign_update_created(sender, instance, created, **kwargs):
     ).values_list('donor_id', flat=True).distinct()
 
     for donor_id in donor_ids:
-        send_notification_task.delay(
+        _enqueue_notification(
+            send_notification_task,
             recipient_id=donor_id,
             notification_type='CAMPAIGN_UPDATE',
             title=f'Update on {campaign.title}: {instance.title}',
@@ -45,7 +66,8 @@ def handle_donation_successful(sender, instance, created, **kwargs):
     if instance.status == 'SUCCESS':
         # Notify donor
         if instance.donor:
-            send_notification_task.delay(
+            _enqueue_notification(
+                send_notification_task,
                 recipient_id=instance.donor.id,
                 notification_type='DONATION_SUCCESSFUL',
                 title='Donation Successful!',
@@ -57,7 +79,8 @@ def handle_donation_successful(sender, instance, created, **kwargs):
         # Notify charity owner
         charity_owner = instance.campaign.organization.owner
         if charity_owner:
-            send_notification_task.delay(
+            _enqueue_notification(
+                send_notification_task,
                 recipient_id=charity_owner.id,
                 notification_type='CAMPAIGN_MILESTONE', # or similar
                 title='New Donation Received',
@@ -74,7 +97,8 @@ def handle_volunteer_application_status_change(sender, instance, created, **kwar
     """
     if not created:
         if instance.status == 'APPROVED':
-            send_notification_task.delay(
+            _enqueue_notification(
+                send_notification_task,
                 recipient_id=instance.volunteer.id,
                 notification_type='VOLUNTEER_APPROVED',
                 title='Volunteer Application Approved',
@@ -83,7 +107,8 @@ def handle_volunteer_application_status_change(sender, instance, created, **kwar
                 object_id=None,
             )
         elif instance.status == 'REJECTED':
-            send_notification_task.delay(
+            _enqueue_notification(
+                send_notification_task,
                 recipient_id=instance.volunteer.id,
                 notification_type='VOLUNTEER_REJECTED',
                 title='Volunteer Application Update',

@@ -1,0 +1,55 @@
+/* ---- AdminDonations ------------------------------------------------------ */
+
+.admin-donations__analytics {
+  margin-block-end: var(--space-6);
+}
+
+.admin-donations__section-title {
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.admin-donations__category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-donations__category-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-block-end: 1px solid var(--color-border);
+}
+
+.admin-donations__category-item:last-child {
+  border-block-end: none;
+}
+
+.admin-donations__category-name {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.admin-donations__category-meta {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-subtle);
+}
+
+.admin-donations__category-amount {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.admin-donations__divider {
+  height: 1px;
+  background-color: var(--color-border);
+  margin-block-end: var(--space-6);
+}

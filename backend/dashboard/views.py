@@ -13,7 +13,7 @@ from donations.models import Donation, DonationStatus
 from charities.models import CharityOrganization, VerificationStatus
 from volunteers.models import VolunteerOpportunity, VolunteerApplication, ApplicationStatus
 from receipts.models import Receipt
-from users.permissions import IsDonor
+from users.permissions import IsDonor, IsAdmin
 
 
 class DonorDashboardView(views.APIView):
@@ -145,8 +145,11 @@ class AnalyticsView(views.APIView):
     """
     Analytics API for system statistics.
     Provides donations over time, donations by category, and campaign success rates.
+
+    Aggregate fundraising figures are internal admin intelligence: only ADMIN
+    users may read them (the sole consumer is the admin donations screen).
     """
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
 
     def get(self, request):
         # Donations by category

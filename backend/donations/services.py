@@ -75,6 +75,30 @@ class RazorpayService:
             logger.error(f'Webhook signature verification failed: {e}')
             return False
 
+    @classmethod
+    def fetch_payment(cls, payment_id):
+        """
+        Fetch a Razorpay payment to confirm its amount, currency, order, and status.
+
+        The Razorpay API is the source of truth for whether money actually moved;
+        the client-side signature alone must never be the only confirmation used.
+        Returns ``None`` when the gateway cannot be reached (caller keeps the
+        donation PENDING rather than guessing).
+        """
+        client = cls.get_client()
+        try:
+            return client.payment.fetch(payment_id)
+        except Exception as e:
+            logger.error(f'Razorpay payment fetch failed: {e}')
+            return None
+
+
+def _mark_failed(donation):
+    """Persist FAILED status in its own atomic block so the write survives any subsequent raise."""
+    with transaction.atomic():
+        donation.status = DonationStatus.FAILED
+        donation.save(update_fields=['status', 'updated_at'])
+
 
 class DonationService:
     """Service handling business logic for donations and campaign fundraising updates."""
@@ -122,14 +146,19 @@ class DonationService:
         return donation
 
     @staticmethod
-    @transaction.atomic
     def complete_donation(donation, razorpay_payment_id, razorpay_signature):
         """
         Verify payment and complete donation:
-        1. Verify signature.
+        1. Verify signature and confirm the fetched payment matches the order.
         2. If already SUCCESS (idempotent webhook / retry), return safely.
-        3. Update donation status to SUCCESS, save payment id & signature.
+        3. Update donation status to SUCCESS under a row lock, save payment id & signature.
         4. Atomically increment campaign raised_amount.
+
+        The success transition and the campaign increment are one committed unit;
+        a concurrent duplicate verify is serialized by ``select_for_update`` and
+        re-checks the status under the lock, so it can never double-credit the
+        campaign. Validation failures mark the donation FAILED in their own
+        committed transaction (``_mark_failed``) before the error propagates.
         """
         if donation.status == DonationStatus.SUCCESS:
             return donation  # Already completed (idempotent)
@@ -137,27 +166,56 @@ class DonationService:
         if donation.status != DonationStatus.PENDING:
             raise DjangoValidationError(f'Cannot complete donation in status {donation.status}.')
 
-        # Verify signature
+        # Verify signature (no writes yet).
         is_valid = RazorpayService.verify_signature(
             order_id=donation.razorpay_order_id,
             payment_id=razorpay_payment_id,
             signature=razorpay_signature,
         )
         if not is_valid:
-            donation.status = DonationStatus.FAILED
-            donation.save(update_fields=['status', 'updated_at'])
+            _mark_failed(donation)
             raise DjangoValidationError('Invalid payment signature.')
 
-        # Update donation
-        donation.status = DonationStatus.SUCCESS
-        donation.razorpay_payment_id = razorpay_payment_id
-        donation.razorpay_signature = razorpay_signature
-        donation.save(update_fields=['status', 'razorpay_payment_id', 'razorpay_signature', 'updated_at'])
+        # Confirm against Razorpay that the payment actually matches this order,
+        # this amount and this currency. The signature proves the checkout data is
+        # genuine; the fetched payment proves the money moved for the right order.
+        fetched = RazorpayService.fetch_payment(razorpay_payment_id)
+        if fetched is None:
+            # Gateway unreachable — keep the donation PENDING so the client or
+            # webhook can retry; never mark a donation SUCCESS we cannot verify.
+            raise DjangoValidationError('Payment gateway is unavailable. Please try again.')
+        expected_paise = int(round(float(donation.amount) * 100))
+        if (
+            fetched.get('order_id') != donation.razorpay_order_id
+            or fetched.get('amount') != expected_paise
+            or fetched.get('currency') != donation.currency
+            or fetched.get('status') not in ('captured', 'authorized')
+        ):
+            _mark_failed(donation)
+            raise DjangoValidationError('Payment verification failed: amount or order mismatch.')
 
-        # Atomically update campaign raised amount using F() expression
-        Campaign.objects.filter(pk=donation.campaign_id).update(
-            raised_amount=models.F('raised_amount') + donation.amount
-        )
+        # Commit the success transition atomically and under a write lock so a
+        # concurrent duplicate verify cannot double-credit the campaign.
+        with transaction.atomic():
+            locked = Donation.objects.select_for_update().get(pk=donation.pk)
+            if locked.status == DonationStatus.SUCCESS:
+                return donation
+            if locked.status != DonationStatus.PENDING:
+                raise DjangoValidationError(f'Cannot complete donation in status {locked.status}.')
+
+            locked.status = DonationStatus.SUCCESS
+            locked.razorpay_payment_id = razorpay_payment_id
+            locked.razorpay_signature = razorpay_signature
+            locked.save(update_fields=['status', 'razorpay_payment_id', 'razorpay_signature', 'updated_at'])
+
+            Campaign.objects.filter(pk=locked.campaign_id).update(
+                raised_amount=models.F('raised_amount') + locked.amount
+            )
+            # Mirror the committed state onto the caller's instance so the
+            # serialized response reflects SUCCESS (locked is a different object).
+            donation.status = DonationStatus.SUCCESS
+            donation.razorpay_payment_id = razorpay_payment_id
+            donation.razorpay_signature = razorpay_signature
 
         return donation
 
@@ -167,6 +225,12 @@ class DonationService:
         """
         Handle Razorpay webhook event (e.g. payment.captured or order.paid).
         Ensure idempotent processing.
+
+        A signed webhook is trusted as coming from Razorpay, but the payload is
+        still cross-checked against the donation we created: the order reference,
+        the captured amount in paise, and the currency must all match. A payload
+        that cannot be matched is logged and ignored (the donation stays PENDING
+        so the client verification flow can still complete it legitimately).
         """
         if not RazorpayService.verify_webhook_signature(raw_body, signature):
             raise DjangoValidationError('Invalid webhook signature.')
@@ -175,9 +239,19 @@ class DonationService:
         payload_data = event_payload.get('payload', {})
 
         if event in ['payment.captured', 'order.paid']:
-            entity = payload_data.get('payment', {}).get('entity') or payload_data.get('order', {}).get('entity', {})
-            order_id = entity.get('order_id') or entity.get('id')
-            payment_id = entity.get('id') if event == 'payment.captured' else entity.get('payments', [{}])[0].get('id')
+            if event == 'payment.captured':
+                entity = payload_data.get('payment', {}).get('entity', {})
+                order_id = entity.get('order_id')
+                payment_id = entity.get('id')
+                captured_amount = entity.get('amount')
+                captured_currency = entity.get('currency')
+            else:  # order.paid
+                entity = payload_data.get('order', {}).get('entity', {})
+                order_id = entity.get('id')
+                payments = entity.get('payments') or []
+                payment_id = payments[0].get('id') if payments else None
+                captured_amount = entity.get('amount')
+                captured_currency = entity.get('currency')
 
             if not order_id:
                 logger.warning('Webhook event missing order reference.')
@@ -191,17 +265,31 @@ class DonationService:
             if donation.status == DonationStatus.SUCCESS:
                 return True  # Already processed (idempotent)
 
-            if donation.status == DonationStatus.PENDING:
-                # If we have payment_id, we can complete it
-                payment_id = entity.get('id', 'pay_webhook_simulated')
-                signature = entity.get('signature', 'sig_webhook_simulated')
-                donation.status = DonationStatus.SUCCESS
-                donation.razorpay_payment_id = payment_id
-                donation.save(update_fields=['status', 'razorpay_payment_id', 'updated_at'])
+            if donation.status != DonationStatus.PENDING:
+                return False
 
-                Campaign.objects.filter(pk=donation.campaign_id).update(
-                    raised_amount=models.F('raised_amount') + donation.amount
+            # Re-validate the signed payload against the donation we created.
+            expected_paise = int(round(float(donation.amount) * 100))
+            if (
+                captured_amount != expected_paise
+                or captured_currency != donation.currency
+                or order_id != donation.razorpay_order_id
+            ):
+                logger.error(
+                    'Webhook amount/currency/reference mismatch for donation %s '
+                    '(expected %s %s on order %s, webhook sent %s %s on order %s).',
+                    donation.id, expected_paise, donation.currency, donation.razorpay_order_id,
+                    captured_amount, captured_currency, order_id,
                 )
-                return True
+                return False
+
+            donation.status = DonationStatus.SUCCESS
+            donation.razorpay_payment_id = payment_id
+            donation.save(update_fields=['status', 'razorpay_payment_id', 'updated_at'])
+
+            Campaign.objects.filter(pk=donation.campaign_id).update(
+                raised_amount=models.F('raised_amount') + donation.amount
+            )
+            return True
 
         return False

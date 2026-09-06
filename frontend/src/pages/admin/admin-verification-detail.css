@@ -1,0 +1,58 @@
+/* ---- AdminVerificationDetail -------------------------------------------- */
+
+.admin-verification-detail__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-subtle);
+  text-decoration: none;
+  margin-block-end: var(--space-2);
+}
+
+.admin-verification-detail__back:hover {
+  color: var(--color-primary);
+}
+
+.admin-verification-detail__actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.admin-verification-detail__layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+@media (max-width: 799.98px) {
+  .admin-verification-detail__layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-verification-detail__main,
+.admin-verification-detail__sidebar {
+  min-width: 0;
+}
+
+.admin-verification-detail__section-title {
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.admin-verification-detail__rejection {
+  color: var(--color-danger);
+  font-weight: var(--font-weight-medium);
+}
+
+.admin-verification-detail__empty-note {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-subtle);
+  margin: 0;
+}

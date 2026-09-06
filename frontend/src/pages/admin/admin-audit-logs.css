@@ -1,0 +1,14 @@
+/* ---- AdminAuditLogs ------------------------------------------------------ */
+
+.admin-audit-logs__resource {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.admin-audit-logs__detail {
+  color: var(--color-text-muted);
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

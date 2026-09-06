@@ -13,6 +13,8 @@ import {
 import { MotionReveal } from '@/components/motion/motion-reveal';
 import { getCampaign } from '@/services/campaigns';
 import { initiateDonation, verifyPayment } from '@/services/donations';
+import { loadRazorpaySdk } from '@/services/razorpay';
+import type { RazorpayResponse } from '@/services/razorpay';
 import { formatCurrency } from '@/utils/format';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components';
@@ -20,36 +22,6 @@ import type { Campaign, ApiError } from '@/types/api';
 import './donate.css';
 
 const PRESET_AMOUNTS = [100, 250, 500, 1000, 2500, 5000];
-
-declare global {
-  interface Window {
-    Razorpay: new (options: RazorpayOptions) => RazorpayInstance;
-  }
-}
-
-interface RazorpayOptions {
-  key: string;
-  amount: number;
-  currency: string;
-  name: string;
-  description: string;
-  order_id: string;
-  handler: (response: RazorpayResponse) => void;
-  prefill?: { name?: string; email?: string };
-  theme?: { color?: string };
-  modal?: { ondismiss?: () => void };
-}
-
-interface RazorpayResponse {
-  razorpay_payment_id: string;
-  razorpay_order_id: string;
-  razorpay_signature: string;
-}
-
-interface RazorpayInstance {
-  open: () => void;
-  close: () => void;
-}
 
 /**
  * DonatePage — donation form with amount presets, custom amount, anonymous
@@ -98,6 +70,15 @@ export default function DonatePage() {
     return () => { cancelled = true; };
   }, [id]);
 
+  // Warm the Razorpay Checkout SDK in the background so checkout opens fast
+  // once the user submits. A failure here is non-fatal — the submit path
+  // awaits the same loader and surfaces a helpful message instead.
+  useEffect(() => {
+    loadRazorpaySdk().catch(() => {
+      /* handled on submit */
+    });
+  }, []);
+
   function handlePresetClick(amount: number) {
     setSelectedAmount(amount);
     setCustomAmount('');
@@ -139,6 +120,19 @@ export default function DonatePage() {
         message: message.trim() || undefined,
         idempotency_key: idempotencyKey,
       });
+
+      // Make sure the official Razorpay Checkout SDK is loaded before we try
+      // to construct it. This resolves immediately if the SDK is already in
+      // the page (e.g. warmed by the mount effect) and rejects gracefully if
+      // it cannot be fetched — never a raw "window.Razorpay is not a
+      // constructor".
+      try {
+        await loadRazorpaySdk();
+      } catch {
+        setFormErrors({ form: 'The payment gateway is temporarily unavailable. Please try again.' });
+        setSubmitting(false);
+        return;
+      }
 
       // Open Razorpay checkout
       const razorpay = new window.Razorpay({

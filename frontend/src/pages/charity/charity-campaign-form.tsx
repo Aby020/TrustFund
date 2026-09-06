@@ -53,8 +53,9 @@ const EMPTY_FORM: CampaignForm = {
 
 /**
  * CharityCampaignForm — create or edit a campaign. Used for both the "new"
- * and ":id/edit" routes. On create the backend locks status to DRAFT; on edit
- * status transitions are validated by the backend.
+ * and ":id/edit" routes. Campaigns created by a verified organization go
+ * live (ACTIVE) immediately; status transitions on edit are validated by the
+ * backend.
  */
 export default function CharityCampaignFormPage() {
   const { id } = useParams<{ id: string }>();
@@ -193,7 +194,7 @@ export default function CharityCampaignFormPage() {
         success('Campaign updated');
       } else {
         await createCampaign(formData);
-        success('Campaign created', 'You can publish it once ready.');
+        success('Campaign created', 'It is now live for donors to support.');
       }
       navigate('/charity/manage/campaigns');
     } catch (err) {
@@ -229,7 +230,7 @@ export default function CharityCampaignFormPage() {
             <p className="charity-campaign-form__subtitle">
               {editing
                 ? 'Update the details of your campaign.'
-                : 'Tell your story and set a fundraising goal. New campaigns start as drafts.'}
+                : 'Tell your story and set a fundraising goal. Your campaign goes live immediately.'}
             </p>
           </div>
         </MotionReveal>

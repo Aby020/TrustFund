@@ -137,6 +137,14 @@ class TestDonationViewSet:
             'currency': 'INR',
         }
         mock_client_instance.utility.verify_payment_signature.return_value = True
+        # The gateway confirms the payment actually matched this order + amount.
+        mock_client_instance.payment.fetch.return_value = {
+            'id': 'pay_test_98765',
+            'order_id': 'order_verify_test',
+            'amount': 200000,
+            'currency': 'INR',
+            'status': 'captured',
+        }
         mock_get_client.return_value = mock_client_instance
 
         # Create pending donation
@@ -185,6 +193,8 @@ class TestDonationViewSet:
                     'entity': {
                         'id': 'pay_webhook_999',
                         'order_id': 'order_webhook_123',
+                        'amount': 150000,
+                        'currency': 'INR',
                     }
                 }
             }
@@ -199,6 +209,205 @@ class TestDonationViewSet:
 
         active_campaign.refresh_from_db()
         assert active_campaign.raised_amount == Decimal('1500.00')
+
+    @patch('donations.services.RazorpayService.get_client')
+    def test_verify_payment_rejects_amount_mismatch(self, mock_get_client, api_client, donor_user, active_campaign):
+        """A payment whose fetched amount does not match the order is failed, not completed."""
+        mock_client_instance = MagicMock()
+        mock_client_instance.utility.verify_payment_signature.return_value = True
+        mock_client_instance.payment.fetch.return_value = {
+            'id': 'pay_test_98765',
+            'order_id': 'order_verify_test',
+            'amount': 199999,   # mismatches the 200000 paise order
+            'currency': 'INR',
+            'status': 'captured',
+        }
+        mock_get_client.return_value = mock_client_instance
+
+        donation = Donation.objects.create(
+            donor=donor_user,
+            campaign=active_campaign,
+            amount=Decimal('2000.00'),
+            status=DonationStatus.PENDING,
+            razorpay_order_id='order_verify_test',
+        )
+
+        api_client.force_authenticate(user=donor_user)
+        url = f'/api/v1/donations/{donation.pk}/verify_payment/'
+        payload = {
+            'razorpay_payment_id': 'pay_test_98765',
+            'razorpay_signature': 'valid_sig_abc',
+        }
+        response = api_client.post(url, payload, format='json')
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+        donation.refresh_from_db()
+        assert donation.status == DonationStatus.FAILED
+        active_campaign.refresh_from_db()
+        assert active_campaign.raised_amount == Decimal('0.00')
+
+    @patch('donations.services.RazorpayService.get_client')
+    def test_verify_payment_rejects_order_mismatch(self, mock_get_client, api_client, donor_user, active_campaign):
+        """A payment fetched under a different order than the donation fails verification."""
+        mock_client_instance = MagicMock()
+        mock_client_instance.utility.verify_payment_signature.return_value = True
+        mock_client_instance.payment.fetch.return_value = {
+            'id': 'pay_test_98765',
+            'order_id': 'order_someone_elses',
+            'amount': 200000,
+            'currency': 'INR',
+            'status': 'captured',
+        }
+        mock_get_client.return_value = mock_client_instance
+
+        donation = Donation.objects.create(
+            donor=donor_user,
+            campaign=active_campaign,
+            amount=Decimal('2000.00'),
+            status=DonationStatus.PENDING,
+            razorpay_order_id='order_verify_test',
+        )
+
+        api_client.force_authenticate(user=donor_user)
+        url = f'/api/v1/donations/{donation.pk}/verify_payment/'
+        payload = {
+            'razorpay_payment_id': 'pay_test_98765',
+            'razorpay_signature': 'valid_sig_abc',
+        }
+        response = api_client.post(url, payload, format='json')
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+        donation.refresh_from_db()
+        assert donation.status == DonationStatus.FAILED
+
+    @patch('donations.services.RazorpayService.get_client')
+    def test_verify_payment_gateway_unavailable_keeps_pending(self, mock_get_client, api_client, donor_user, active_campaign):
+        """When the gateway cannot be reached, the donation stays PENDING (retryable)."""
+        mock_client_instance = MagicMock()
+        mock_client_instance.utility.verify_payment_signature.return_value = True
+        mock_client_instance.payment.fetch.side_effect = Exception('network down')
+        mock_get_client.return_value = mock_client_instance
+
+        donation = Donation.objects.create(
+            donor=donor_user,
+            campaign=active_campaign,
+            amount=Decimal('2000.00'),
+            status=DonationStatus.PENDING,
+            razorpay_order_id='order_verify_test',
+        )
+
+        api_client.force_authenticate(user=donor_user)
+        url = f'/api/v1/donations/{donation.pk}/verify_payment/'
+        payload = {
+            'razorpay_payment_id': 'pay_test_98765',
+            'razorpay_signature': 'valid_sig_abc',
+        }
+        response = api_client.post(url, payload, format='json')
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+        donation.refresh_from_db()
+        assert donation.status == DonationStatus.PENDING
+        active_campaign.refresh_from_db()
+        assert active_campaign.raised_amount == Decimal('0.00')
+
+    @patch('donations.services.RazorpayService.get_client')
+    def test_webhook_rejects_amount_mismatch(self, mock_get_client, api_client, donor_user, active_campaign):
+        """A signed webhook whose amount does not match the donation is ignored."""
+        mock_client_instance = MagicMock()
+        mock_client_instance.utility.verify_webhook_signature.return_value = True
+        mock_get_client.return_value = mock_client_instance
+
+        donation = Donation.objects.create(
+            donor=donor_user,
+            campaign=active_campaign,
+            amount=Decimal('1500.00'),
+            status=DonationStatus.PENDING,
+            razorpay_order_id='order_webhook_123',
+        )
+
+        url = '/api/v1/donations/webhook/'
+        bad_payload = {
+            'event': 'payment.captured',
+            'payload': {
+                'payment': {
+                    'entity': {
+                        'id': 'pay_webhook_999',
+                        'order_id': 'order_webhook_123',
+                        'amount': 42,
+                        'currency': 'INR',
+                    }
+                }
+            }
+        }
+        response = api_client.post(url, bad_payload, format='json', HTTP_X_RAZORPAY_SIGNATURE='valid_webhook_sig')
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data['status'] == 'ignored'
+
+        donation.refresh_from_db()
+        assert donation.status == DonationStatus.PENDING
+        assert donation.razorpay_payment_id is None
+        active_campaign.refresh_from_db()
+        assert active_campaign.raised_amount == Decimal('0.00')
+
+    @patch('donations.services.RazorpayService.get_client')
+    def test_webhook_invalid_signature_rejected(self, mock_get_client, api_client, donor_user, active_campaign):
+        """A webhook with a bad signature is rejected before any state changes.
+
+        The Razorpay SDK raises on a signature mismatch; ``verify_webhook_signature``
+        catches that and returns False, which must abort the handler.
+        """
+        mock_client_instance = MagicMock()
+        mock_client_instance.utility.verify_webhook_signature.side_effect = Exception('signature mismatch')
+        mock_get_client.return_value = mock_client_instance
+
+        donation = Donation.objects.create(
+            donor=donor_user,
+            campaign=active_campaign,
+            amount=Decimal('1500.00'),
+            status=DonationStatus.PENDING,
+            razorpay_order_id='order_webhook_123',
+        )
+
+        url = '/api/v1/donations/webhook/'
+        forged_payload = {
+            'event': 'payment.captured',
+            'payload': {'payment': {'entity': {'id': 'pay_fake', 'order_id': 'order_webhook_123', 'amount': 150000, 'currency': 'INR'}}},
+        }
+        response = api_client.post(url, forged_payload, format='json', HTTP_X_RAZORPAY_SIGNATURE='forged_sig')
+        assert response.status_code == status.HTTP_400_BAD_REQUEST, response.data
+
+        donation.refresh_from_db()
+        assert donation.status == DonationStatus.PENDING
+        assert active_campaign.raised_amount == Decimal('0.00')
+
+    @patch('donations.services.RazorpayService.get_client')
+    def test_verify_payment_rejects_invalid_signature(self, mock_get_client, api_client, donor_user, active_campaign):
+        """An invalid client signature leaves the donation FAILED and uncredited."""
+        mock_client_instance = MagicMock()
+        mock_client_instance.utility.verify_payment_signature.side_effect = Exception('bad sig')
+        mock_get_client.return_value = mock_client_instance
+
+        donation = Donation.objects.create(
+            donor=donor_user,
+            campaign=active_campaign,
+            amount=Decimal('2000.00'),
+            status=DonationStatus.PENDING,
+            razorpay_order_id='order_verify_test',
+        )
+
+        api_client.force_authenticate(user=donor_user)
+        url = f'/api/v1/donations/{donation.pk}/verify_payment/'
+        payload = {
+            'razorpay_payment_id': 'pay_test_98765',
+            'razorpay_signature': 'forged_sig',
+        }
+        response = api_client.post(url, payload, format='json')
+        assert response.status_code == status.HTTP_400_BAD_REQUEST, response.data
+
+        donation.refresh_from_db()
+        assert donation.status == DonationStatus.FAILED
+        active_campaign.refresh_from_db()
+        assert active_campaign.raised_amount == Decimal('0.00')
 
     def test_donation_isolation(self, api_client, donor_user, other_donor_user, active_campaign):
         donation1 = Donation.objects.create(

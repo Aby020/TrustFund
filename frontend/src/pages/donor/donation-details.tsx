@@ -10,6 +10,7 @@ import {
   EmptyState,
   ErrorState,
   Skeleton,
+  useToast,
 } from '@/components';
 import { MotionReveal } from '@/components/motion/motion-reveal';
 import { fadeUp, staggerContainer } from '@/components/motion/variants';
@@ -26,6 +27,7 @@ import './donation-details.css';
  */
 export default function DonationDetailsPage() {
   const { id } = useParams<{ id: string }>();
+  const toast = useToast();
   const [donation, setDonation] = useState<Donation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<ApiError | null>(null);
@@ -53,9 +55,12 @@ export default function DonationDetailsPage() {
     if (!donation?.receipt_id) return;
     setDownloading(true);
     try {
-      await downloadReceipt(donation.receipt_id);
+      await downloadReceipt(donation.receipt_id, donation.receipt_number);
     } catch {
-      // Error is non-critical — the button stays active for retry.
+      toast.error(
+        'Download failed',
+        'We could not download your receipt right now. Please try again.',
+      );
     } finally {
       setDownloading(false);
     }

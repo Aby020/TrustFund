@@ -11,6 +11,7 @@ from django.db.models import Q
 from django.core.exceptions import ValidationError as DjangoValidationError
 
 from campaigns.models import Campaign, CampaignStatus, CampaignUpdate
+from admin_api.models import AuditAction, record_audit
 from campaigns.serializers import (
     CampaignSerializer,
     CampaignCreateSerializer,
@@ -81,7 +82,20 @@ class CampaignViewSet(viewsets.ModelViewSet):
         if not org.is_verified:
             raise PermissionDenied('Only verified charity organizations can create campaigns.')
 
-        serializer.save(organization=org)
+        # Verified charities' campaigns go live immediately. The model default
+        # is DRAFT; only a verified organization can pass the check above, so
+        # every campaign created through this endpoint starts ACTIVE.
+        campaign = serializer.save(
+            organization=org,
+            status=CampaignStatus.ACTIVE,
+        )
+        record_audit(
+            actor=user,
+            action=AuditAction.CAMPAIGN_CREATED,
+            resource_type='Campaign',
+            resource_label=campaign.title,
+            detail=f'Campaign created by {org.name}',
+        )
 
     def perform_update(self, serializer):
         campaign = self.get_object()
@@ -96,12 +110,26 @@ class CampaignViewSet(viewsets.ModelViewSet):
             raise DRFValidationError({'raised_amount': 'Raised amount cannot be modified through campaign endpoints.'})
 
         serializer.save()
+        record_audit(
+            actor=user,
+            action=AuditAction.CAMPAIGN_UPDATED,
+            resource_type='Campaign',
+            resource_label=campaign.title,
+            detail=f'Campaign details updated by {user.get_full_name()}',
+        )
 
     def perform_destroy(self, instance):
         user = self.request.user
         if not user.is_admin_user():
             if not user.is_charity() or instance.organization.owner != user:
                 raise PermissionDenied('You do not have permission to delete this campaign.')
+        record_audit(
+            actor=user,
+            action=AuditAction.CAMPAIGN_DELETED,
+            resource_type='Campaign',
+            resource_label=instance.title,
+            detail=f'Campaign deleted by {user.get_full_name()}',
+        )
         instance.delete()
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
@@ -118,6 +146,14 @@ class CampaignViewSet(viewsets.ModelViewSet):
             campaign.cancel(user)
         except DjangoValidationError as e:
             raise DRFValidationError(str(e))
+
+        record_audit(
+            actor=user,
+            action=AuditAction.CAMPAIGN_CANCELLED,
+            resource_type='Campaign',
+            resource_label=campaign.title,
+            detail=f'Campaign cancelled by {user.get_full_name()}',
+        )
 
         serializer = CampaignSerializer(campaign)
         return Response(serializer.data, status=status.HTTP_200_OK)

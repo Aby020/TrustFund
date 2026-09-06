@@ -1,0 +1,237 @@
+/* ---- AdminLayout — page frame + shared admin chrome ---------------------- */
+
+.admin-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-block-size: 100%;
+}
+
+.admin-layout__sidebar {
+  padding: var(--space-8) var(--space-6);
+  border-inline-end: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.admin-layout__content {
+  padding: var(--space-8) var(--space-6);
+  min-block-size: 100vh;
+}
+
+@media (max-width: 1023.98px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-layout__sidebar {
+    padding: var(--space-4) var(--space-4);
+    border-inline-end: none;
+    border-block-end: 1px solid var(--color-border);
+    overflow-x: auto;
+  }
+
+  .admin-layout__content {
+    padding: var(--space-6) var(--space-4);
+  }
+}
+
+/* ==================== Shared admin page chrome ============================
+   These classes are NOT componentised — they serve as lightweight,
+   composable building blocks that every admin page composes with BEM-
+   like class names.  No separate components file needed; they are
+   authored once here and live alongside the layout that owns them.
+   ========================================================================= */
+
+/* Page header */
+.admin-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-3) var(--space-6);
+  margin-block-end: var(--space-6);
+}
+
+.admin-page-header__title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text);
+}
+
+.admin-page-header__subtitle {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-subtle);
+}
+
+/* Stat cards (2–4 across) */
+.admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-4);
+  margin-block-end: var(--space-6);
+}
+
+.admin-stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+}
+
+.admin-stat-card__label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-subtle);
+}
+
+.admin-stat-card__value {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  line-height: var(--line-height-tight);
+}
+
+/* Filter / action bar */
+.admin-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-block-end: var(--space-4);
+}
+
+/* Data table wrapper */
+.admin-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.admin-table thead {
+  background-color: var(--color-surface-muted);
+}
+
+.admin-table th {
+  padding: var(--space-3) var(--space-4);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-subtle);
+  text-align: start;
+  white-space: nowrap;
+  border-block-end: 1px solid var(--color-border);
+}
+
+.admin-table td {
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text);
+  border-block-end: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.admin-table tbody tr:last-child td {
+  border-block-end: none;
+}
+
+.admin-table tbody tr:hover {
+  background-color: var(--color-surface-muted);
+}
+
+/* Simple pagination row */
+.admin-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-block-start: var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-subtle);
+}
+
+/* Definition / detail list */
+.admin-definition-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-definition-list dt {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-subtle);
+}
+
+.admin-definition-list dd {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+@media (max-width: 599.98px) {
+  .admin-definition-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Verification timeline */
+.admin-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-timeline__item {
+  display: grid;
+  grid-template-columns: 8px 1fr;
+  gap: var(--space-3);
+  padding-block-start: var(--space-1);
+}
+
+.admin-timeline__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  margin-block-start: 5px;
+}
+
+.admin-timeline__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.admin-timeline__title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.admin-timeline__meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+  margin: 0;
+}
+
+.admin-timeline__detail {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}

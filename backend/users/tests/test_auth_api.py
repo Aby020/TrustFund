@@ -271,6 +271,30 @@ class TestLoginAPI:
 
         assert 'password' not in str(response.content)
 
+    def test_login_rate_limited_after_throttle(self):
+        """
+        Repeated login attempts from one IP are throttled (429).
+
+        Fires against the real configured rate (60/min) from a TEST-NET-3 IP so
+        the check is hermetic and independent of the default 127.0.0.1 key that
+        the rest of the auth suite shares.
+        """
+        from django.conf import settings
+
+        allowed = settings.REST_FRAMEWORK['DEFAULT_THROTTLE_RATES']['auth']
+        assert allowed == '60/min'  # keep this test honest if the rate moves
+
+        client = APIClient()
+        url = '/api/v1/auth/login/'
+        payload = {'email': 'loginuser@example.com', 'password': 'WrongPass123!'}
+
+        for _ in range(60):
+            response = client.post(url, payload, format='json', REMOTE_ADDR='203.0.113.7')
+            assert response.status_code == 400  # bad creds, within the allowance
+
+        throttled = client.post(url, payload, format='json', REMOTE_ADDR='203.0.113.7')
+        assert throttled.status_code == 429
+
 
 @pytest.mark.django_db
 class TestRefreshAPI:

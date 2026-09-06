@@ -195,7 +195,8 @@ class TestDashboardsAndAnalytics:
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_analytics_endpoint(self):
-        """Analytics endpoint returns categorical breakdown and success rate."""
+        """Analytics endpoint (admin-only) returns categorical breakdown and success rate."""
+        self.client.force_authenticate(user=self.admin)
         url = reverse('analytics')
         response = self.client.get(url)
 
@@ -208,3 +209,16 @@ class TestDashboardsAndAnalytics:
         assert data['total_campaigns'] == 1
         assert data['successful_campaigns'] == 0  # raised 5000 < goal 10000
         assert data['success_rate_percentage'] == 0.0
+
+    def test_analytics_forbidden_for_non_admin(self):
+        """Aggregate analytics are admin-only; a donor gets 403."""
+        self.client.force_authenticate(user=self.donor)
+        url = reverse('analytics')
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_analytics_unauthenticated(self):
+        """Aggregate analytics are admin-only; anonymous requests get 401."""
+        url = reverse('analytics')
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED

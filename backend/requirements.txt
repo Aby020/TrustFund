@@ -18,6 +18,11 @@ celery==5.3.6
 
 # Production
 gunicorn==22.0.0
+whitenoise==6.12.0
+
+# Cloudinary media storage (production; enabled via CLOUDINARY_STORAGE_ENABLED)
+cloudinary==1.46.2
+django-cloudinary-storage==0.3.0
 
 # PDF Generation
 reportlab==4.1.0

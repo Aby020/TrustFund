@@ -1,0 +1,17 @@
+/* ---- AdminVerificationsList --------------------------------------------- */
+
+.admin-verifications-list__org {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-verifications-list__org-name {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.admin-verifications-list__org-meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+}
