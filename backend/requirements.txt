@@ -1,12 +1,15 @@
 # Django
 Django==6.1
 django-environ==0.11.2
-djangorestframework==3.15.2
-djangorestframework-simplejwt==5.3.1
+djangorestframework==3.18.0
+djangorestframework-simplejwt==5.5.1
 django-filter==24.3
 
 # Payment Gateways
 razorpay==1.4.1
+# razorpay imports pkg_resources (from setuptools), which Python 3.12+ venvs no
+# longer bundle by default; pin setuptools so a fresh production install works.
+setuptools==73.0.1
 psycopg2-binary==2.9.9
 
 # CORS
