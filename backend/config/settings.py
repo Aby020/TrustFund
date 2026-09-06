@@ -8,7 +8,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import logging
+
 import environ
+from django.core.exceptions import ImproperlyConfigured
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +28,7 @@ env = environ.Env(
     REDIS_URL=(str, 'redis://localhost:6379/0'),
     CELERY_BROKER_URL=(str, 'redis://localhost:6379/1'),
     CELERY_RESULT_BACKEND=(str, 'redis://localhost:6379/2'),
-    EMAIL_URL=(str, 'console://'),
+    EMAIL_URL=(str, ''),
     SECURE_SSL_REDIRECT=(bool, False),
     SESSION_COOKIE_SECURE=(bool, False),
     CSRF_COOKIE_SECURE=(bool, False),
@@ -295,13 +298,47 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERY_WORKER_PREFETCH_MULTIPLIER = 4
 
-# Email configuration
-# Use console backend for development; in production, set EMAIL_URL to smtp:// or smtps://
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-else:
-    EMAIL_CONFIG = env.email('EMAIL_URL')
-    vars().update(EMAIL_CONFIG)
+# Email configuration.
+#
+# EMAIL_URL is the only source of SMTP credentials (never hardcoded). When set,
+# django-environ parses it into the EMAIL_* settings. When absent (or not a
+# value django-environ can turn into a backend) we fall back to Django's console
+# backend so the app starts in any environment without crashing; real delivery
+# requires a valid EMAIL_URL such as smtps://user:pass@host:587.
+#
+# NOTE: django-environ 0.11 renamed the console scheme to ``consolemail``, so the
+# legacy ``console://`` value is no longer a valid email URL. configure_email()
+# treats it as "no real email" and falls back to console rather than failing
+# startup with ImproperlyConfigured.
+logger = logging.getLogger(__name__)
+
+
+def configure_email(email_url: str) -> dict:
+    """Build the Django email settings from an EMAIL_URL value.
+
+    Returns a dict of ``EMAIL_*`` settings. An empty value, or a value
+    django-environ cannot parse into a backend, yields the console backend so
+    Django can start; real email delivery always requires a valid EMAIL_URL.
+    """
+    if not email_url:
+        logger.warning(
+            'EMAIL_URL is not set; using the console email backend. '
+            'Set EMAIL_URL (e.g. smtps://user:pass@host:587) for real delivery.'
+        )
+        return {'EMAIL_BACKEND': 'django.core.mail.backends.console.EmailBackend'}
+    try:
+        return environ.Env.email_url_config(email_url)
+    except ImproperlyConfigured as exc:
+        logger.warning(
+            'EMAIL_URL (%s) is not a valid email URL; using the console email '
+            'backend. Set EMAIL_URL to a valid SMTP URL for real delivery.',
+            exc,
+        )
+        return {'EMAIL_BACKEND': 'django.core.mail.backends.console.EmailBackend'}
+
+
+EMAIL_URL = env('EMAIL_URL')
+vars().update(configure_email(EMAIL_URL))
 
 # Security settings for production
 if not DEBUG:
