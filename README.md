@@ -1,6 +1,8 @@
-# 💚 TrustFund
+
 
 <div align="center">
+
+# 💚 TrustFund
 
 ### Trusted Giving, Real Impact
 
