@@ -1,4 +1,4 @@
-# 💙 TrustFund
+# 💚 TrustFund
 
 <div align="center">
 
