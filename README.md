@@ -25,7 +25,7 @@ A modern full-stack donation and fundraising platform that connects verified cha
 </p>
 
 <p align="center">
-  <img src="trustfund-screenshots/home.gif" alt="TrustFund home — platform overview" width="100%">
+  <img src="screenshots/home.png" alt="TrustFund home — platform overview" width="100%">
 </p>
 
 ## 📖 Project Overview
@@ -66,123 +66,30 @@ TrustFund answers this with a **documented charity verification workflow**, enfo
 
 ## 📸 Screenshots
 
-### 🏠 Home / Platform Overview
+All screenshots captured at 1280 × 800 from the running application.
 
-The landing page opens with the product promise — *"Every gift, verified. Every rupee, accounted for."* — an animated hero, clear calls to action, and a preview of verified charities and active campaigns.
-
-<p align="center">
-  <img src="trustfund-screenshots/home.gif" alt="TrustFund home — platform overview" width="100%">
-</p>
-
----
-
-### 🎯 Campaign Discovery
-
-The public discovery feed lists active campaigns from verified charities, with search, category filtering, and sorting — each card surfacing the charity, its goal, the current raised total, and progress.
-
-<p align="center">
-  <img src="trustfund-screenshots/campaign-discovery.png" alt="Campaign discovery" width="100%">
-</p>
-
----
-
-### 🏛️ Verified Charities
-
-Browse the directory of verified charity organizations — each with its mission, location, and proof of verification before it can raise funds.
-
-<p align="center">
-  <img src="trustfund-screenshots/charities.png" alt="Verified charities" width="100%">
-</p>
-
----
-
-### 👤 Donor Dashboard
-
-Donors see their lifetime giving, impact summary, and quick access to donations, receipts, and notifications.
-
-<p align="center">
-  <img src="trustfund-screenshots/donor-dashboard.png" alt="Donor dashboard" width="100%">
-</p>
-
----
-
-### 🧾 Donation & Receipt
-
-The donation detail view with its payment status and the numbered PDF receipt for every contribution.
-
-<p align="center">
-  <img src="trustfund-screenshots/donation-details.png" alt="Donation and receipt" width="100%">
-</p>
-
----
-
-### 🏥 Charity Dashboard
-
-The charity workspace shows funds raised across campaigns, active campaigns, and organization impact at a glance.
-
-<p align="center">
-  <img src="trustfund-screenshots/charity-dashboard.png" alt="Charity dashboard" width="100%">
-</p>
-
----
-
-### 🗂️ Campaign Management
-
-Charities create and manage fundraising campaigns and progress updates from one focused workspace.
-
-<p align="center">
-  <img src="trustfund-screenshots/charity-campaigns.png" alt="Campaign management" width="100%">
-</p>
-
----
-
-### 🤝 Volunteer Management
-
-Charities publish volunteer opportunities and review applications, with statuses tracked on both sides.
-
-<p align="center">
-  <img src="trustfund-screenshots/charity-volunteers.png" alt="Volunteer management" width="100%">
-</p>
-
----
-
-### 🏃 Volunteer Experience
-
-Volunteers discover real-world opportunities posted by verified organizations and apply in a few clicks.
-
-<p align="center">
-  <img src="trustfund-screenshots/volunteer-opportunities.png" alt="Volunteer opportunities" width="100%">
-</p>
-
----
-
-### 📝 Volunteer Applications
-
-Volunteers track their applications through every stage — submitted, approved, rejected, or attended.
-
-<p align="center">
-  <img src="trustfund-screenshots/volunteer-applications.png" alt="Volunteer applications" width="100%">
-</p>
-
----
-
-### 🔔 Charity Notifications
-
-Typed in-app notifications keep charity owners informed of donations, campaign updates, and volunteer activity — with duplicate protection.
-
-<p align="center">
-  <img src="trustfund-screenshots/charity-notifications.png" alt="Charity notifications" width="100%">
-</p>
-
----
-
-### 🛡️ Administration Dashboard
-
-System-wide oversight of charity verifications, users, organizations, campaigns, donations, and audit logs.
-
-<p align="center">
-  <img src="trustfund-screenshots/admin-dashboard.png" alt="Administration dashboard" width="100%">
-</p>
+<table>
+  <tr>
+    <td align="center"><b>🏠 Home</b><br>The platform promise — <i>"Every gift, verified.<br>Every rupee, accounted for."</i> — with hero,<br>verified charities, and active campaigns.<br><br><img src="screenshots/home.png" alt="Home" width="100%"></td>
+    <td align="center"><b>🔑 Sign In</b><br>Email + password login with<br>JWT session restore.<br><br><img src="screenshots/sign-in.png" alt="Sign In" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>📝 Register</b><br>Role-gated sign-up as<br>Donor, Charity, or Volunteer.<br><br><img src="screenshots/register.png" alt="Register" width="100%"></td>
+    <td align="center"><b>🎯 Campaign Discovery</b><br>Search, category filter, and sort<br>over active verified campaigns.<br><br><img src="screenshots/campaigns.png" alt="Campaigns" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>📋 Campaign Detail</b><br>Goal, progress bar, charity info,<br>updates, and donate call-to-action.<br><br><img src="screenshots/campaign-detail.png" alt="Campaign Detail" width="100%"></td>
+    <td align="center"><b>💳 Donation Flow</b><br>Razorpay checkout with preset<br>amounts and custom input.<br><br><img src="screenshots/donation.png" alt="Donation" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>🧾 Receipt</b><br>Numbered PDF receipt with<br>payment status and download.<br><br><img src="screenshots/donation-confirmation.png" alt="Donation Confirmation" width="100%"></td>
+    <td align="center"><b>📊 Donor Dashboard</b><br>Lifetime giving, impact summary,<br>recent donations, and receipts.<br><br><img src="screenshots/donor-dashboard.png" alt="Donor Dashboard" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>🏥 Charity Dashboard</b><br>Funds raised, active campaigns,<br>organization verification status.<br><br><img src="screenshots/charity-dashboard.png" alt="Charity Dashboard" width="100%"></td>
+    <td align="center"><b>🛡️ Admin Dashboard</b><br>System-wide verifications,<br>users, organizations, and audit logs.<br><br><img src="screenshots/admin-dashboard.png" alt="Admin Dashboard" width="100%"></td>
+  </tr>
+</table>
 
 ---
 
@@ -281,7 +188,7 @@ TrustFund/
 │       ├── hooks/                   # Reusable UI hooks
 │       └── styles/                  # Design tokens + base/utilities
 │
-├── trustfund-screenshots/           # README screenshots (home.gif + captured UI views)
+├── screenshots/                     # README screenshots (1280 × 800 page captures)
 ├── README.md
 ├── LICENSE
 └── .gitignore

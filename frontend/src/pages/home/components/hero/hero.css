@@ -1,93 +1,193 @@
-/* Hero — asymmetric two-column layout with staggered entrance. */
+/* Hero — full-bleed opening section. A real-world impact photograph covers
+   the viewport behind a cinematic dark green/black gradient, with the
+   TrustFund headline layered directly over the darker left half. The section
+   is ALWAYS dark by design, so copy colors are pinned explicitly to the light
+   end of the palette (white headline, pale lead/overline) rather than
+   semantic inverse tokens — those flip with the OS colour scheme and would
+   render near-black over the photo on a dark-theme system. Motion is
+   restrained: image scale-in + drift parallax, text fade/slide. Reduced
+   motion is handled globally (MotionConfig disables transform/layout
+   animations), so no per-rule motion guards are needed here. */
 
 .hero {
   position: relative;
+  isolation: isolate;
   overflow: hidden;
-  padding-block: var(--spacing-section-lg, 6rem);
-  background:
-    radial-gradient(
-      ellipse 60% 50% at 80% 20%,
-      var(--color-primary-soft, #ecfdf5) 0%,
-      transparent 70%
-    ),
-    var(--color-bg, #faf9f7);
+  display: flex;
+  align-items: center;
+  min-block-size: calc(100svh - var(--shell-header-height));
+  /* Break out of .app-main's top padding so the photo bleeds to the header. */
+  margin-block-start: calc(-1 * var(--spacing-page-y));
+  background: var(--ink-950); /* base tone while the image layer resolves */
+  color: var(--stone-0); /* section is a dark surface — text stays white */
 }
 
-/* Ambient background layer — a soft emerald glow that slowly breathes.
-   Decorative only; aria-hidden and motion is suppressed under reduced motion. */
-.hero__ambient {
+/* ---- Media: photograph + cinematic overlay ---- */
+
+.hero__media {
   position: absolute;
   inset: 0;
   z-index: 0;
+  overflow: hidden;
+}
+
+/* Parallax mount — padded beyond the hero so the drift never shows an edge.
+   transform-only; disabled automatically under reduced motion. */
+.hero__media-viewport {
+  position: absolute;
+  inset-block: -16%;
+  inset-inline: 0;
+  will-change: transform;
+}
+
+.hero__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Cinematic dark-green-to-clear gradient. Darkest behind the headline (left),
+   image revealed toward the right; a soft top fade keeps the sticky header
+   readable and a shallow bottom fade grounds the copy. The dark zone tracks
+   the ~40rem copy block and dissolves by the right third, leaving the
+   photograph vivid on the right. */
+.hero__overlay {
+  --hero-shadow: 6 23 18; /* deep green-black — emerald-950 / ink blend */
+  position: absolute;
+  inset: 0;
   pointer-events: none;
-  background: radial-gradient(
-    ellipse 55% 45% at 70% 30%,
-    var(--color-primary-soft, #ecfdf5) 0%,
-    transparent 70%
-  );
-}
-
-.hero__inner {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  gap: var(--space-10);
-  align-items: center;
-}
-
-@media (min-width: 1024px) {
-  .hero__inner {
-    grid-template-columns: 1fr minmax(0, 1fr);
-    gap: var(--space-16);
-  }
+  background:
+    linear-gradient(
+      180deg,
+      rgb(var(--hero-shadow) / 0.55) 0%,
+      rgb(var(--hero-shadow) / 0) 26%
+    ),
+    linear-gradient(
+      90deg,
+      rgb(var(--hero-shadow) / 0.97) 0%,
+      rgb(var(--hero-shadow) / 0.9) 32%,
+      rgb(var(--hero-shadow) / 0.64) 52%,
+      rgb(var(--hero-shadow) / 0.32) 70%,
+      rgb(var(--hero-shadow) / 0.1) 88%,
+      rgb(var(--hero-shadow) / 0.05) 100%
+    ),
+    linear-gradient(
+      0deg,
+      rgb(var(--hero-shadow) / 0.68) 0%,
+      rgb(var(--hero-shadow) / 0.12) 30%
+    );
 }
 
 /* ---- Copy ---- */
 
-.hero__copy {
+.hero__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  padding-block: clamp(3rem, 9vh, 6.5rem);
+}
+
+.hero__content {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
+  max-inline-size: 40rem;
 }
 
 .hero__overline {
-  color: var(--color-primary, #047857);
+  color: var(--emerald-300);
 }
 
 .hero__heading {
+  margin: 0;
   font-size: clamp(var(--font-size-5xl), 1.75rem + 3vw, var(--font-size-7xl));
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--letter-spacing-tight);
-  color: var(--color-text-strong);
   line-height: var(--line-height-xs);
-  margin: 0;
+  /* Explicit white — the hero is always a dark surface, regardless of OS
+     colour scheme. A compact two-stop shadow lifts it off the photo: a short
+     crisp edge shadow plus a soft drop. No glow, no colour. */
+  color: var(--stone-0);
+  text-shadow:
+    0 1px 2px rgb(10 15 13 / 0.6),
+    0 2px 18px rgb(10 15 13 / 0.45);
 }
 
 .hero__lead {
-  max-inline-size: 36rem;
+  max-inline-size: 34rem;
   font-size: var(--font-size-lg);
-  color: var(--color-text-muted);
   line-height: var(--line-height-md);
+  color: var(--stone-200);
+  text-shadow: 0 1px 2px rgb(10 15 13 / 0.5);
 }
 
 .hero__cta {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-4);
+  margin-block-start: var(--space-2);
 }
 
+/* Hero CTAs restyled for the dark photo. Both force explicit light colors so
+   they stay legible whichever OS colour scheme is active. The base
+   .button--outline tones are tuned for light surfaces; here they get a
+   visible white border, light text, and a subtle backing so the button never
+   reads as disabled against the photograph. */
+
 .hero__cta-primary {
+  /* Brighter emerald fill for the dark frame — the fill pops off the photo
+     while the ink text keeps the label sharply readable. */
+  --cta-primary-bg: var(--emerald-400);
+  --cta-primary-bg-hover: var(--emerald-300);
+  --cta-primary-bg-active: var(--emerald-500);
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
+  background-color: var(--cta-primary-bg);
+  border-color: rgb(255 255 255 / 0.28);
+  color: var(--ink-950);
+  box-shadow:
+    0 1px 2px rgb(10 15 13 / 0.45),
+    0 8px 26px rgb(16 185 129 / 0.38);
+}
+
+.hero__cta-primary:hover:not(:disabled):not(.button--loading) {
+  background-color: var(--cta-primary-bg-hover);
+}
+
+.hero__cta-primary:active:not(:disabled):not(.button--loading) {
+  background-color: var(--cta-primary-bg-active);
 }
 
 .hero__cta-primary :last-child {
-  transition: transform 160ms var(--easing-out-cubic);
+  transition: transform var(--duration-fast) var(--ease-out-cubic);
 }
 
 .hero__cta-primary:hover :last-child {
   transform: translateX(3px);
+}
+
+.hero__cta-outline {
+  color: var(--stone-0);
+  border-color: rgb(255 255 255 / 0.7);
+  background-color: rgb(12 16 15 / 0.24);
+  box-shadow: 0 2px 10px rgb(10 15 13 / 0.35);
+}
+
+.hero__cta-outline:hover:not(:disabled):not(.button--loading) {
+  background-color: rgb(255 255 255 / 0.16);
+  color: var(--stone-0);
+  border-color: rgb(255 255 255 / 0.95);
+}
+
+/* Focus rings drawn against the dark photograph (ink offset, emerald ring). */
+.hero__cta-primary:focus-visible,
+.hero__cta-outline:focus-visible {
+  box-shadow:
+    0 0 0 var(--ring-offset) var(--ink-950),
+    0 0 0 calc(var(--ring-offset) + var(--ring-width)) var(--emerald-300);
 }
 
 .hero__trust {
@@ -95,187 +195,35 @@
   align-items: center;
   gap: var(--space-2);
   font-size: var(--font-size-sm);
-  color: var(--color-text-subtle);
+  color: var(--stone-300);
+  text-shadow: 0 1px 2px rgb(10 15 13 / 0.5);
 }
 
-/* ---- Visual composition ---- */
-
-.hero__visual-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.hero__visual {
-  position: relative;
-  display: grid;
-  place-items: center;
-  min-height: 260px;
-  width: 100%;
-  max-width: 420px;
-  padding-block: var(--space-12);
-}
-
-/* Main card */
-
-.hero__card--main {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-5);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface, #fff);
-  border: 1px solid var(--color-border, #e8e5df);
-  box-shadow: var(--shadow-lg);
-  min-width: 280px;
-  max-width: 340px;
-  overflow: hidden;
-}
-
-/* Photo header inside the hero campaign card — contained, zero-CLS */
-
-.hero__card-media {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  width: calc(100% + 2 * var(--space-5));
-  margin-left: calc(-1 * var(--space-5));
-  margin-top: calc(-1 * var(--space-5));
-  overflow: hidden;
-}
-
-.hero__card-media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.hero__card-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.hero__verified-dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: var(--radius-full);
-  background: var(--color-success, #16a34a);
-}
-
-.hero__card-tag {
-  font-size: var(--font-size-2xs);
-  color: var(--color-text-subtle);
-  letter-spacing: var(--letter-spacing-wide);
-}
-
-.hero__card-title {
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-strong);
-  letter-spacing: var(--letter-spacing-tight);
-  margin: 0;
-}
-
-.hero__progress-wrap {
-  height: 6px;
-  border-radius: var(--radius-full);
-  background: var(--color-surface-muted, #f4f2ee);
-  overflow: hidden;
-}
-
-.hero__progress-bar {
-  height: 100%;
-  width: var(--hero-progress, 0%);
-  border-radius: var(--radius-full);
-  background: var(--color-primary, #047857);
-  transition: width 800ms var(--easing-in-out);
-}
-
-.hero__card-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-}
-
-/* Floating chips */
-
-.hero__chip {
-  position: absolute;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
-  background: var(--color-surface, #fff);
-  border: 1px solid var(--color-border, #e8e5df);
-  box-shadow: var(--shadow-md);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-strong);
-  white-space: nowrap;
-}
-
-.hero__chip--receipt {
-  bottom: 20%;
-  left: -8px;
-}
-
-.hero__chip--impact {
-  top: 16%;
-  right: -4px;
-}
-
-.hero__pulse {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: var(--radius-full);
-  background: var(--color-success, #16a34a);
-  animation: hero-pulse 2s ease-in-out infinite;
-}
-
-@keyframes hero-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-/* Visual note */
-
-.hero__visual-note {
-  margin-top: var(--space-3);
-  font-size: var(--font-size-2xs);
-  color: var(--color-text-subtle);
-  letter-spacing: var(--letter-spacing-wide);
-  font-style: italic;
-}
-
-/* ---- Reduced motion ---- */
-
-@media (prefers-reduced-motion: reduce) {
-  .hero__pulse {
-    animation: none;
-  }
-}
-
-/* ---- Mobile adjustments ---- */
+/* ---- Mobile: fuller-width copy over the frame. The overlay goes denser and
+   more uniform so text stays readable; the photograph remains visible through
+   the middle. No horizontal overflow — hero clips its own media. */
 
 @media (max-width: 767px) {
-  .hero {
-    padding-block: var(--spacing-section, 4rem);
+  .hero__inner {
+    padding-block: var(--space-16);
+  }
+
+  .hero__overlay {
+    background:
+      linear-gradient(
+        180deg,
+        rgb(var(--hero-shadow) / 0.9) 0%,
+        rgb(var(--hero-shadow) / 0.66) 38%,
+        rgb(var(--hero-shadow) / 0.56) 56%,
+        rgb(var(--hero-shadow) / 0.92) 100%
+      );
   }
 
   .hero__heading {
-    font-size: clamp(var(--font-size-4xl), 1.5rem + 2.5vw, var(--font-size-6xl));
-  }
-
-  .hero__visual {
-    min-height: 220px;
-    padding-block: var(--space-8);
+    font-size: clamp(
+      var(--font-size-4xl),
+      1.5rem + 2.5vw,
+      var(--font-size-6xl)
+    );
   }
 }
