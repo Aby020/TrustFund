@@ -295,11 +295,11 @@ CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = env('CSRF_TRUSTED_ORIGINS')
 
 # Redis configuration
-REDIS_URL = env('REDIS_URL')
-if not DEBUG and not REDIS_URL:
-    raise ImproperlyConfigured("REDIS_URL must be set in production.")
-if REDIS_URL is None:
-    REDIS_URL = 'redis://localhost:6379/0'
+#
+# REDIS_URL is optional: deployments that do not use Redis (and environments
+# like Render that do not provision it) start with it unset or blank. Anything
+# that needs Redis reads the value and degrades gracefully when it is empty.
+REDIS_URL = env('REDIS_URL') or ''
 
 # Celery Configuration
 CELERY_BROKER_URL = env('CELERY_BROKER_URL')
