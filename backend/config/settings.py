@@ -19,13 +19,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Initialize environ
 env = environ.Env(
-    DEBUG=(bool, False),
+    # Parsed explicitly below; a (bool, ...) schema would coerce before we can
+    # inspect it. See the DEBUG definition for why strict parsing matters.
+    DEBUG=(str, ''),
     ALLOWED_HOSTS=(list, []),
     CORS_ALLOWED_ORIGINS=(list, []),
     CSRF_TRUSTED_ORIGINS=(list, []),
     SECRET_KEY=(str, ''),
     DATABASE_URL=(str, ''),
-    REDIS_URL=(str, 'redis://localhost:6379/0'),
+    REDIS_URL=(str, None),
     CELERY_BROKER_URL=(str, 'redis://localhost:6379/1'),
     CELERY_RESULT_BACKEND=(str, 'redis://localhost:6379/2'),
     EMAIL_URL=(str, ''),
@@ -52,7 +54,13 @@ environ.Env.read_env(BASE_DIR / '.env')
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+#
+# Fail closed: DEBUG is True only when the variable is explicitly set to 'True'
+# or '1'. Anything else — unset, empty, 'yes', 'on', 'False', a typo — evaluates
+# to False. django-environ's own (bool, ...) coercion is deliberately not used
+# here because it treats any non-empty unrecognized string as True, which would
+# silently enable debug mode in production from a mistyped variable.
+DEBUG = env('DEBUG').strip() in ('True', 'true', '1')
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 RAZORPAY_KEY_ID = env('RAZORPAY_KEY_ID')
@@ -278,12 +286,20 @@ SIMPLE_JWT = {
 
 # CORS settings for React frontend
 CORS_ALLOWED_ORIGINS = env('CORS_ALLOWED_ORIGINS')
+if not DEBUG:
+    if not CORS_ALLOWED_ORIGINS or '*' in CORS_ALLOWED_ORIGINS:
+        raise ImproperlyConfigured("CORS_ALLOWED_ORIGINS must be set and cannot be '*' in production.")
+
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = env('CSRF_TRUSTED_ORIGINS')
 
 # Redis configuration
 REDIS_URL = env('REDIS_URL')
+if not DEBUG and not REDIS_URL:
+    raise ImproperlyConfigured("REDIS_URL must be set in production.")
+if REDIS_URL is None:
+    REDIS_URL = 'redis://localhost:6379/0'
 
 # Celery Configuration
 CELERY_BROKER_URL = env('CELERY_BROKER_URL')
@@ -342,9 +358,9 @@ vars().update(configure_email(EMAIL_URL))
 
 # Security settings for production
 if not DEBUG:
-    SECURE_SSL_REDIRECT = env('SECURE_SSL_REDIRECT')
-    SESSION_COOKIE_SECURE = env('SESSION_COOKIE_SECURE')
-    CSRF_COOKIE_SECURE = env('CSRF_COOKIE_SECURE')
+    SECURE_SSL_REDIRECT = env('SECURE_SSL_REDIRECT', default=True)
+    SESSION_COOKIE_SECURE = env('SESSION_COOKIE_SECURE', default=True)
+    CSRF_COOKIE_SECURE = env('CSRF_COOKIE_SECURE', default=True)
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True

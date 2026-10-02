@@ -3,6 +3,7 @@ memory/
 .gstack/
 .claude/
 .verification_shots/
+cc.bat
 
 # Knowledge-graph tooling output (regenerated locally, never committed)
 graphify-out/
